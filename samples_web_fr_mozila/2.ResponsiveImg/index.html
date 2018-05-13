@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>Mozilla splash page</title>
+    <!--
+    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
+    -->
+    <link href='stylesheets/index.css' rel='stylesheet' type='text/css'>
+  </head>
+
+  <body>
+    <header>
+      <h1>Mozilla</h1>
+      <!-- insert <img> element, link to the small
+          version of the Firefox logo -->
+      <a href='https://www.mozilla.org/en-US/firefox/'>
+        <img src='pics/firefox_logo-only_RGB_w120.png' alt='The Firefox logo 120px width'>
+      </a>
+
+    </header>
+
+    <main>
+      <article>
+        <!-- insert iframe from youtube -->
+        <iframe width="400" height="225" src="https://www.youtube.com/embed/ojcNcvb1olg?rel=0" frameborder="0" allow="autoplay; encrypted-media" allowfullscreen></iframe>
+
+        <h2>Rocking the free web</h2>
+
+        <p>Mozilla are a global community of technologists, thinkers, and builders, working together to keep the Internet alive and accessible, so people worldwide can be informed contributors and creators of the Web. We believe this act of human collaboration across an open platform is essential to individual growth and our collective future.</p>
+
+        <p>Click on the images below to find more information about the cool stuff Mozilla does. <a href="https://www.flickr.com/photos/mathiasappel/21675551065/">Red panda picture</a> by Mathias Appel.</p>
+      </article>
+
+      <div class="further-info">
+        <!-- insert images with srcsets and sizes -->
+        <a href="https://www.mozilla.org/en-US/firefox/new/">
+          <img srcset="pics/firefox_logo-only_RGB_w120.png 480w,
+                       pics/firefox_logo-only_RGB_w400.png"
+               sizes="(max-width:480w) 440px,
+                      800px"
+               src="pics/firefox_logo-only_RGB_w1200.png" alt='Pure Firefox logo'>
+        </a>
+        
+        <a href="https://www.mozilla.org/">
+          <img srcset="pics/mozilla-dinosaur-head_w120.png 480w,
+                       pics/mozilla-dinosaur-head_w400.png"
+               src="pics/mozilla-dinosaur-head_w1200.png" alt="The dinosaur head, a symbol of Firefox">
+        </a>
+        <a href="https://addons.mozilla.org/">
+          <img srcset="pics/firefox-addons_w120.jpg 480w,
+                       pics/firefox-addons_w400.jpg"
+               src="pics/firefox-addons_w400.jpg" alt="Firefox logo in 1000 pieces">
+        </a>
+        <a href="https://developer.mozilla.org/en-US/">
+          <img src='pics/mdn.svg' alt="an SVG picture showing Mozilla Dinosaur head">
+        </a>
+        <div class="clearfix"></div>
+      </div>
+
+      <div class="red-panda">
+        <!-- insert picture element -->
+        <picture>
+          <source srcset="pics/red-panda_portrait_w600.jpg" media="max-width: 599px">
+          <source srcset="pics/red-panda_landscape_w1200.jpg" media="min-width: 600px">
+          <img src='pics/red-panda_lanscape_w1600.jpg' alt='A cute panda is climping the bamboo'>
+        </picture>
+      </div>
+
+    </main>
+  </body>
+</html>
