@@ -1,0 +1,8 @@
+#box {
+    width: 75%;
+    height: 5em;
+    border: 2px solid rgb(0, 0, 0);
+    padding: 4px 6px;
+    font: 16px "Lucida Grande", "Helvetica", "Arial", "sans-serif";
+    background-color: #ffffff;
+}

@@ -1,0 +1,61 @@
+/* || Generatl Setup */
+/* inherited from myIndex.css */
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size:10px;
+  background-color:#a9a9a9;
+}
+body{
+  width: 100%;
+  min-width:800px;
+  margin: 0 auto;
+}
+
+/* || for table */
+table {
+  border-collapse: collapse;
+  border: 2px solid rgb(200,200,200);
+  letter-spacing: 1px;
+  font-size: 1.2rem;
+}
+
+td, th {
+  border: 1px solid rgb(190,190,190);
+  padding: 10px 20px;
+}
+
+th {
+  background-color: rgb(235,235,235);
+}
+
+td {
+  text-align: center;
+}
+
+tr:nth-child(even) td {
+  background-color: rgb(120,120,120);
+}
+
+tr:nth-child(odd) td {
+  background-color: rgb(186, 129, 129);
+}
+
+#table4 , #table5 tr  td{
+  background-color:inherit;
+}
+
+#table5 tbody {
+  font-size: 90%;
+  font-style: italic;
+}
+#table5 tfoot {
+  font-weight: bold;
+}
+
+caption {
+  padding: 10px;
+}
