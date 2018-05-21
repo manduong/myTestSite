@@ -23,6 +23,10 @@ table {
   font-size: 1.2rem;
 }
 
+caption {
+  padding: 10px;
+}
+
 td, th {
   border: 1px solid rgb(190,190,190);
   padding: 10px 20px;
@@ -34,6 +38,7 @@ th {
 
 td {
   text-align: center;
+  color:white;
 }
 
 tr:nth-child(even) td {
@@ -44,7 +49,7 @@ tr:nth-child(odd) td {
   background-color: rgb(186, 129, 129);
 }
 
-#table4 , #table5 tr  td{
+#table4 , #table5 tr  td {
   background-color:inherit;
 }
 
@@ -56,6 +61,41 @@ tr:nth-child(odd) td {
   font-weight: bold;
 }
 
-caption {
-  padding: 10px;
+#table6 table {
+  color: white;
+  background-color:gray;
+}
+
+#table6 thead, th {
+  background-color: darkblue;
+  color:inherit;
+}
+
+#table6 tr:nth-child(even) td {
+  background-color: inherit;
+  color:inherit;
+}
+
+#table6 tr:nth-child(odd) td {
+  background-color: inherit;
+  color:inherit;
+}
+
+
+#table7 table * {
+  background-color:inherit;
+  color:inherit;
+  width:inherit;
+}
+#table7 tbody {
+  color:initial;
+  text-align:initial;
+}
+
+#table7 tr:nth-child(even) td {
+  background-color: inherit;
+}
+
+#table7 tr:nth-child(odd) td {
+  background-color: inherit;
 }

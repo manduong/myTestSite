@@ -87,6 +87,9 @@ nav li {
   text-align: center;
   flex: 1;
 }
+nav li:hover {
+  background-color:gray;
+}
 nav a, nav span {
   display: inline-block;
   font-size: 2rem;

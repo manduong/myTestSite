@@ -1,0 +1,169 @@
+main #forms {
+  flex:5;
+  display:block;
+  font-size:1.7em;
+}
+
+/*START CSS for form2*/
+#form2 form {
+  /* Just to center the form on the page */
+  margin: 0 auto;
+  width: 400px;
+  /* To see the outline of the form */
+  padding: 1em;
+  border: 1px solid #CCC;
+  border-radius: 1em;
+}
+
+#form2 form div + div {
+  /*helps 2 div get margin*/
+  margin-top: 0.5em;
+}
+
+#form2 label {
+  /* To make sure that all labels have the same size and are properly aligned */
+  display: inline-block;
+  width: 90px;
+  text-align: right;
+}
+
+#form2 input, 
+#form2 textarea {
+  /* To make sure that all text fields have the same font settings
+     By default, textareas have a monospace font */
+  font: 1em sans-serif;
+
+  /* To give the same size to all text fields */
+  width: 300px;
+  box-sizing: border-box;
+
+  /* To harmonize the look & feel of text field border */
+  border: 1px solid #999;
+}
+
+#form2 input:focus, 
+#form2 textarea:focus {
+  /* To give a little highlight on active elements */
+  border-color: #000;
+  border-width: 2.5px;
+  background-color:palegoldenrod;
+}
+
+#form2 textarea {
+  /* To properly align multiline text fields with their labels */
+  vertical-align: top;
+
+  /* To give enough room to type some text */
+  height: 5em;
+}
+
+#form2 .button {
+  /* To position the buttons to the same position of the text fields */
+  padding-left: 90px; /* same size as the label elements */
+}
+
+#form2 button {
+  /* This extra margin represent roughly the same space as the space
+     between the labels and their text fields */
+  margin-left: .5em;
+}
+/*FINISH CSS for form2*/
+
+/*START CSS for form3*/
+#form3 h1, h2, h3, h4 {
+  margin-top: 0;
+}
+
+#form3 ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+#form3 form {
+  margin: 0 auto;
+  width: 400px;
+  padding: 1em;
+  border: 2px solid #FFF;
+  border-radius: 1em;
+}
+#form3 section {
+margin: 2px 0 0 2px;
+}
+
+#form3 div+div {
+  margin-top: 1em;
+}
+
+#form3 label span {
+  display: inline-block;
+  width: 120px;
+  text-align: right;
+  font-size: 1em;
+}
+
+#form3 input,
+#form3 textarea {
+  font: 1em sans-serif;
+  width: 250px;
+  box-sizing: border-box;
+  border: 1px solid #999;
+}
+
+#form3 input[type=checkbox],
+#form3 input[type=radio] {
+  width: auto;
+  border: none;
+}
+
+#form3 input:focus,
+#form3 textarea:focus {
+  border-color: #000;
+  background-color: aquamarine;
+}
+
+#form3 textarea {
+  vertical-align: top;
+  height: 5em;
+  resize: vertical;
+}
+
+#form3 fieldset {
+  width: 250px;
+  box-sizing: border-box;
+  margin-left: 130px;
+  border: 1px solid #999;
+}
+
+#form3 button {
+  margin: 10px 0 0 20px;
+}
+
+#form3 label {
+position: relative;
+}
+
+#form3 label em {
+position: absolute;
+right: 10px;
+top: 20px;
+font-size:70%;
+}
+/*FINISH CSS for form3*/
+
+/*START CSS for form4*/
+
+#form4 section {
+margin-top: 2px;
+}
+
+#form4 div+div {
+  margin-top: 1em;
+}
+#form4 p+p {
+  margin-top: 2em;
+}
+#form4 fieldset+fieldset{
+  margin-top: 1em;
+}
+/*FINISH CSS for form4*/
