@@ -155,6 +155,7 @@ font-size:70%;
 
 #form4 section {
 margin-top: 2px;
+
 }
 
 #form4 div+div {
@@ -166,4 +167,15 @@ margin-top: 2px;
 #form4 fieldset+fieldset{
   margin-top: 1em;
 }
+#form4 fieldset ul{
+  display:none;
+}
+#form4 .checkableItems:hover fieldset{
+  width:40%;
+  display:inline-block;
+}
+#form4 .checkableItems:hover ul {
+  display:inherit;
+}
+
 /*FINISH CSS for form4*/
