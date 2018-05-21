@@ -1,0 +1,114 @@
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="stylesheets/myIndex.css">
+    <link rel="stylesheet" href="stylesheets/mytest_html_css_javascript.css">
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge,chrome=1">
+    <title>static web tried with javascript</title>
+
+    <script>
+        function myFnc1(){
+            //example the script inside the head
+            document.getElementById("demo1").innerHTML = "Changed the Content 1";
+        }
+    </script>
+
+    <noscript>Webbrowser does not support javascript</noscript>
+</head>
+<body>
+    <h1>This is for testing the javascript</h1>
+<div class=alltest1>
+    <h2>Try tests block 1</h2>
+<div class="testblock">
+    <button type="button" onclick="myFnc1()" >TryDemo1</button> <p style="display:inline"id="demo1">This is for demo 1, content will be changed</p>
+</div>
+
+<div class="testblock">
+    <button type="button" onclick="myFnc2()">TryDemo2</button> <p style="display:inline"id="demo2">This is for demo 2, content will be changed</p>
+</div>
+
+<div class="testblock">
+        <button type="button" onclick="myFnc3()">TryDemo3</button> <p style="display:inline"id="demo3">This is for demo 3, content will be changed</p>
+</div>
+
+<div class="testblock">
+        <button type="button" onclick="myFnc4()">TryDemo4</button> <p style="display:inline"id="demo4">Everything will be delete when click the button due to documten.write is called after document loaded</p>
+</div>
+
+<div class="testblock">
+        <button type="button" onclick="myFnc5()">TryDemo5</button> <p style="display:inline"id="demo5">try an alert box</p>
+</div>
+
+<div class="testblock">
+        <button type="button" onclick="myFnc6()">TryDemo6</button> <p style="display:inline"id="demo6">Activate debugging with F12, select "Console in the debugger menu, then click the buttom again"</p>
+</div>
+
+<div class="testblock">
+    <button type="button" onclick="myFnc7()">TryDemo7</button>
+    <p style="display:inline"id="demo7">Try JSON parsing a data
+        <pre id='inputdata'>
+            {
+                "name":"ManD",
+                "age":30,
+                "cars": [
+                    { "name":"Ford", "models":[ "Fiesta", "Focus", "Mustang" ] },
+                    { "name":"BMW", "models":[ "320", "X3", "X5" ] },
+                    { "name":"Fiat", "models":[ "500", "Panda" ] }
+                ]
+            }
+        </pre>
+    </p>
+    <p style="display:inline" id="demo7result"></p>
+</div>
+
+<div class="testblock">
+    <button type="button" onclick="myFnc8()">TryDemo8</button>
+    <p style="display:inline"id="demo8">Number (1-100) guessing game (click TryDemo to start the game)</p>
+    <div class="resultParas">
+    <p class="guesses"></p>
+    <p class="lastResult"></p>
+    <p class="lowOrHi"></p>
+    <div class='resetButton'></div>
+    <label for="guessField">Enter a guess: </label>
+        <input type="text" id="guessField" class="guessField" disabled=true>
+        <input type="submit" value="Submit guess" class="guessSubmit" disabled=true>
+    </div>
+    <p style="display:inline" id="demo8result"></p>
+</div>
+
+<div class="testblock">
+    <button type='button' onclick='myFnc9()'>TryDemo9</button>
+    <p style='display:inline' id='demo9'>2D-Canvas and some maths (click to active)</p>
+    <div id='test09AddField'></div>
+    <canvas id='myTestCanvas' width=3 height=3></canvas>
+</div>
+
+<div class="testblock">
+    <button type='button' onclick='myFnc10()'>TryDemo10</button>
+    <p style='display:inline' id='demo10'>Try arrays and display of list (click to activate)</p>
+    <div id='test10AddField'></div>
+</div>
+
+<div class="testblock">
+    <button type='button' onclick='myFnc11()'>TryDemo11</button>
+    <p style='display:inline' id='demo11'>Try Generating a new funny story</p>
+    <div id='test11AddField'></div>
+</div>
+
+<!--ANY SCRIPT AT THE BOTTOM - my style -->
+    <script>
+        function myFnc2(){
+            //example the script inside the body, the same, inside <script> is OK
+            document.getElementById("demo2").innerHTML = "Changed the Content 2";
+        }
+    </script>
+    <script>
+        document.write("<p style='display:block;float:right'><a href=\"javascript:void(document.body.style.backgroundColor='red');\">Click me to change background of body</a>this line will be added after all elements adfsadfdsafdsfdsfadsf</p>")
+    </script>
+<!-- put the script at bottome of body, so that the whole document was loaded first, then scripts are executed-->
+<script src="scripts/mytest_html_css_javascript.js"> </script> <!--example of the script outside the html-->
+
+</body>
+</html>

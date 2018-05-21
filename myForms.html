@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="ManDuong">
+    <meta name="description" content="This is my very first website testing knowledge about HTML forms">
+    <meta name="og:description" content="This is my very first website testing knowledge about HTML forms">
+    <meta name="og:site_name" content="main-test-site">
+    <title>My test page Forms</title>
+    <link rel="shortcut icon" href="icons/myFirstIcon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="stylesheets/myIndex.css" type="text/css">
+    <link rel="stylesheet" href="stylesheets/myForms.css" type="text/css">
+  </head>
+  <body>
+    <header>
+      <h1>My HTML test for Forms</h1>
+      <a href='index.html'><img src="pictures/myLogo.png" alt='a simple MD logo'></a>
+    </header>
+
+    <nav style="display:none">
+      <!--RESERVED-->
+    </nav>
+    <!--
+      Some common attributes of elements in a form
+      . autofocus (default:false): auto focused when the page load, only 1 element of whole form has this
+      . disabled (default:false)
+      . form="#a-form-id" : specifies the form that the widget is associated with. this let users set a form widget outside of a <form> element, in practice, no browser supports this.
+      . name="a-name" : is the name of the element, this is submitted with form data.
+      . value="a-value" : provides the widget's initial value.
+    -->
+
+
+
+
+    <main>
+      <aside class='leftAside'>
+        <h2>markers in main</h2>
+        <a href='#form1'>form 1</a>
+        <a href='#form2'>form 2</a>
+        <a href='#form3'>form 3</a>
+        <a href='#form4'>form 4</a>
+      </aside>
+
+      <div id='forms'>
+        <hr>
+        <div id="form1">
+          <h2>My first simple form (no <abbr title="Cascading Style Sheets">CSS</abbr>)</h2>
+          <form action="#" method='GET' target='_blank'>
+            <div> <!--Each widget should be controlled by a <div>-->
+              <label for="name">Name:</label> <!--'for' attribute link the label to corresponding widget id-->
+              <input type="text" id="name" name="user_name" value="Mr.X"> 
+                <!--'name' attribute is keyword for sending value when submitting to server, if omitted, the data of that input field will not be sent at all-->
+                <!--'value' is default value in the text/textarea/email... input region-->
+            </div>
+            <div>
+              <label for='email'>Email:</label>
+              <input type='email' id='email' name="user_mail" value="x@nowhere.y">
+            </div>
+            <div>
+              <label for='msg'>Message:</label>
+              <textarea id='msg' name='user_message' cols=20 rows=5>ALOHA</textarea>
+            </div>
+            <div class="button">
+              <button type='submit'>Send your message</button>
+              <button type='reset'>Reset fields</button>
+              <!--button with type='submit' helps to send form's data to server-->
+              <!--button with type='reset' helps to reset all fields in form to default values-->
+            </div>
+          </form>
+        </div>
+
+        <hr>
+        <div id="form2">
+          <h2>Same as form 1 but applied simple CSS</h2>
+          <form action="#" method='GET' target='_blank'>
+            <div>
+              <label for="name">Name:</label><input type="text" id="name" name="user_name" value="Mr.X"> 
+            </div>
+            <div>
+              <label for='email'>Email:</label><input type='email' id='email' name="user_mail" value="x@nowhere.y">
+            </div>
+            <div>
+              <label for='msg'>Message:</label><textarea id='msg' name='user_message' cols=20 rows=5>ALOHA</textarea>
+            </div>
+            <div class="button">
+              <button type='submit'>Send your message</button><button type='reset'>Reset fields</button>
+            </div>
+          </form>
+        </div>
+
+        <hr>
+        <div id="form3">
+          <h2>form 3: Payment form</h2>
+          <p>This form describes common HTML structures used with forms.<br>
+             Here we start to employ HTML tags like &lt;fieldset&gt; (with &lt;legend&gt;), &lt;div&gt;, &lt;ul&gt;, ... and new types of widget</p>
+          <form action="#" method='POST' target="_self">
+            <h3>Your payment:</h3>
+            <p>Required fields are followed by <strong><abbr title="required">*</abbr></strong>.</p>
+            <section>
+              <h4>Contact information</h4>
+              <fieldset>
+                <legend>Title</legend>
+                <ul>
+                  <li>
+                    <label for="title_1">Mister</label>
+                    <input type='radio' id='title_1' name="title" value="Mr." checked>
+                  </li>
+                  <li>
+                    <label for="title_2">Miss</label>
+                    <input type='radio' id='title_2' name="title" value="Ms.">
+                  </li>
+                </ul>
+              </fieldset>
+              <p>
+                <label for="name"><span>Name: </span><strong><abbr title="required">*</abbr></strong></label>
+                <input type="text" id="name" name="username">
+              </p>
+              <p>
+                <label for="email"><span>Email: </span><strong><abbr title="required">*</abbr></strong></label>
+                <input type="email" id="email" name="usermail">
+              </p>
+              <p>
+                <label for="password"><span>Password: </span><strong><abbr title="required">*</abbr></strong></label>
+                <input type="password" id="password" name="userpass">
+              </p>
+            </section>
+            <section>
+              <h4>Payment information</h4>
+              <p>
+                <label for="card"><span>Card type: </span></label>
+                <select id="card" name="usercard">
+                  <option value="visa">Visa</option>
+                  <option value="mc" selected>MasterCard</option>
+                  <option value="amex">American Express</option>
+                </select>
+              </p>
+              <p>
+                <label for="cardnum"><span>Card number: </span><strong><abbr title="required">*</abbr></strong></label>
+                <input type="text" id="cardnum" name="cardnum">
+              </p>
+              <p>
+                <label for="cardexpdate"><span>Expiration Date: </span><strong><abbr title="required">*</abbr></strong><em>formatted as mm/yy</em></label>
+                <input type="text" id="cardexpdate" name="cardexpdate">
+              </p>
+            </section>
+            <section>
+              <p>
+                <button type='submit'>Validate the payment</button>
+                <button type='reset'>Reset fields</button>
+              </p>
+            </section>
+          </form>
+        </div>
+
+        <hr>
+        <div id="form4">
+          <h2>form 4: some native widgets</h2>
+          <form action="#form4" method="POST" target="_self">
+            <h3>Some native widgets</h3>
+            <section>
+              <h4>Single line text fields</h4>
+              <p>
+                <label for="text1">A basic text field, with 'value' as default value:</label>
+                <input type="text" id="text1" value="I'm default text" name="text1">
+              </p>
+              <p>
+                <label for="text2">A basic text field, add 'placeholder' as guiding:</label>
+                <input type="text" id="text2" placeholder="Input any text here..., default='NOTHING'" value="NOTHING" name="text2">
+              </p>
+              <p>
+                <label for="text3">A basic text field, add 'spellcheck':</label>
+                <input type="text" id="text3" placeholder="Input any text here..." value="wron value" name="text3">
+              </p>
+
+              <p>
+                <label for="email1">text field for email, allow 1 email:</label>
+                <input type="email" id="email1" placeholder="a@b.c" name="email1">
+              </p>
+              <p>
+                <label for="email2">text field for email, allow multiple:</label>
+                <input type="email" id="email2" multiple placeholder="a@b.c,x@y.z" name="email2">
+              </p>
+
+              <p>
+                <label for="password1">text field for passowrd:</label>
+                <input type="password" id="password1" placeholder="placeholder?" name="password1" title="characters should be black dots">
+              </p>
+
+              <p>
+                <label for="search1">text field for search:</label>
+                <input type="search" placeholder="Search..." id="search1" name="search1">
+              </p>
+
+              <p>
+                <label for="tel1">text field for telephone number:</label>
+                <input type="tel" id="tel1" name="tel1" placeholder="no specific validation">
+              </p>
+
+              <p>
+                <label for="url1">text field for url (web address):</label>
+                <input type="url" id="url1" name="url" placeholder="https://developer.mozilla.org">
+              </p>
+
+            </section>
+
+            <section>
+              <h4>Multiple line text field</h4>
+              <p>
+                <label for="textarea1">Add a multi-line comments here</label>
+                <textarea id="textarea1" name="textarea1" placeholder="Put multi-line plain text" cols=20 rows=5 wrap="hard">
+Default line 1
+Default line 2
+                </textarea>
+              </p>
+            </section>
+
+            <section>
+              <h4>Drop-down lists</h4>
+              <p>HTML has 2 forms of drop-down content: the <strong>select box</strong>,and <abbr title="by binding a &lt;datalist&gt; to a &lt;input type=text&gt;"><strong>autocomplete box</strong></abbr>.</p>
+              <fieldset>
+                <legend><abbr title="use &lt;select&gt;">traditional drop-down lists</abbr></legend>
+                <p>
+                  <label for="select1">Simple drop-down list</label>
+                  <select id="select1" name="select1">
+                    <option>Banana</option>
+                    <option selected>Cherry</option>
+                    <option>Lemon</option>
+                  </select>
+                </p>
+                <p>
+                  <label for="select2">Simple drop-down list, groups of options</label>
+                  <select id="select2" name="select2">
+                    <optgroup label="fruits">
+                      <option>Banana</option>
+                      <option selected>Cherry</option>
+                      <option>Lemon</option>
+                    </optgroup>
+                    <optgroup label="vegetables">
+                      <option>Carrot</option>
+                      <option>Eggplant</option>
+                      <option>Potato</option>
+                    </optgroup>
+                  </select>
+                </p>
+                <p>
+                  <label for="select3">Multiple selection of drop-down list</label>
+                  <select id="select3" name="select3" multiple>
+                    <optgroup label="fruits">
+                      <option>Banana</option>
+                      <option selected>Cherry</option>
+                      <option>Lemon</option>
+                    </optgroup>
+                    <optgroup label="vegetables">
+                      <option>Carrot</option>
+                      <option>Eggplant</option>
+                      <option selected>Potato</option>
+                    </optgroup>
+                  </select>
+                </p>
+              </fieldset>
+
+              <fieldset>
+                <legend><abbr title="use &lt;datalist&gt; binding with a text field">autocomplete boxes</abbr></legend>
+                <p>
+                    <label for="autoComplete1">What's your favorite dessert</label>
+                    <input type="text" id="autoComplete1" name="autoComplete1" list="datalist1">
+                    <datalist id="datalist1">
+                      <option>Banana</option>
+                      <option>Cherry</option>
+                      <option>Lemon</option>
+                      <option selected>Carrot</option>
+                      <option>Eggplant</option>
+                      <option>Potato</option>
+                    </datalist>
+                  </p>
+
+                <p>
+                  <label for="autoComplete2">What's your favorite dessert</label>
+                  <input type="text" id="autoComplete2" name="autoComplete2" list="datalist2">
+                  <datalist id="datalist2">
+                    <label for="fallback4Datalist">or pick from this drop-down</label>
+                    <select id="fallback4Datalist">
+                      <optgroup label="fruits">
+                        <option>Banana</option>
+                        <option>Cherry</option>
+                        <option>Lemon</option>
+                      </optgroup>
+                      <optgroup label="vegetables">
+                        <option selected>Carrot</option>
+                        <option>Eggplant</option>
+                        <option>Potato</option>
+                      </optgroup>
+                    </select>
+                  </datalist>
+                </p>
+                <p>Note:<em>The 2 latest autocomplete boxes may look same in FireFox18+ but will be different from older (&lt;datalist&gt; unsupported) browsers</em>.</p>
+              </fieldset>
+            </section>
+
+            <section>
+              <h4>Checkable items</h4>
+              <p>There are 2 kinds of checkable items: the <abbr title="Use &lt;input type=checkbox&gt;"><strong>check box</strong></abbr>, and the <abbr title="Use &lt;input type=radio&gt;"><strong>radio button</strong></abbr>.</p>
+            </section>
+
+            <section>
+              <p>
+                <button type="submit">Submit for nothing</button>
+                <button type="reset">Reset all fields</button>
+              </p>
+            </section>
+          </form>
+        </div>
+      </div>
+      <aside class='rightAside'>
+        <h2>reference</h2>
+        <a href='#section1'>section 1</a>
+      </aside>
+    </main>
+
+    <footer>
+      <div id="contact">
+        <address>
+            <p>Author: Man Duong</p>
+            <a href="mailto:lightningstorm0310@gmail.com?cc=name2@nowhere.com&subject=Always%20learn%20questions&body=HAHAHAHA">
+              Email me if any
+            </a>
+        </address>
+      </div>
+    </footer>
+
+
+<!--########################-->
+  <script src="scripts/myForms.js"></script>
+  </body>
+</html>
