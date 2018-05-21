@@ -297,9 +297,53 @@ Default line 2
               </fieldset>
             </section>
 
-            <section>
+            <section class="checkableItems">
               <h4>Checkable items</h4>
               <p>There are 2 kinds of checkable items: the <abbr title="Use &lt;input type=checkbox&gt;"><strong>check box</strong></abbr>, and the <abbr title="Use &lt;input type=radio&gt;"><strong>radio button</strong></abbr>.</p>
+              <p>Notice: <em>These widgets do not behave exactly like others. For most from widgets, once the form is submitted, all widgets that have a 'name' attribute are sent, even if no value has been filled out. In these cases, if they are not checked, nothing is sent,  not even their name.</em></p>
+              <fieldset>
+                <legend>Choose all the sports you like</legend>
+                <ul>
+                  <li>
+                    <label for="volleyball">Volleyball</label>
+                    <input type="checkbox" id="volleyball" name="sport" value="volleyball" checked>
+                  </li>
+                  <li>
+                    <label for="football">Football</label>
+                    <input type="checkbox" id="football" name="sport" value="football">
+                  </li>
+                  <li>
+                    <label for="swimming">Swimming</label>
+                    <input type="checkbox" id="swimming" name="sport" value="swimming">
+                  </li>
+                  <li>
+                    <label for="pingpong">Ping-pong</label>
+                    <input type="checkbox" id="pingpong" name="sport" value="pingpong" checked>
+                  </li>
+                </ul>
+              </fieldset>
+
+              <fieldset>
+                <legend>Pick one of a people you want to play with</legend>
+                <ul>
+                  <li>
+                    <label for="father">Your father</label>
+                    <input type="radio" id="father" name="playwith" value="father">
+                  </li>
+                  <li>
+                    <label for="brother">Your brother</label>
+                    <input type="radio" id="brother" name="playwith" value="brother">
+                  </li>
+                  <li>
+                    <label for="girlfriend">Your Girl Friend</label>
+                    <input type="radio" id="girlfriend" name="playwith" value="girlfriend" checked>
+                  </li>
+                  <li>
+                    <label for="boyfriend">Your Boy Friend</label>
+                    <input type="radio" id="boyfriend" name="playwith" value="boyfriend" checked>
+                  </li>
+                </ul>
+              </fieldset>
             </section>
 
             <section>
