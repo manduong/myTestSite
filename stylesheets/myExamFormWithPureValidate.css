@@ -1,4 +1,20 @@
-main #forms {
+div h3 {
+  margin: 0;
+  margin-top: 1em;
+
+  padding: 0;
+}
+
+.headerMoreInfo {
+  margin-bottom: 10px;
+  display: flex;
+  flex-flow: row wrap;
+  background-color: rgba(0, 114, 201, 0.2);
+  padding:0;
+  padding-left: 1%;
+}
+
+main #content {
   flex:5;
   display:block;
   font-size:1.7em;
@@ -17,6 +33,11 @@ main #forms {
 main > div {
   margin-left: 180px;
   padding: 0;
+}
+
+p b {
+  font-size: 120%;
+  text-decoration-line: underline;
 }
 
 /*Settigng for marker explanation (aside leftAside)*/
@@ -42,53 +63,135 @@ main > div {
   display:block;
 }
 
+.errorBox {
+  background-color: #e75555;
+}
+.successBox {
+  background-color: #80e080;
+}
+
+#howto_use_validate p,
+#howto_use_validate ul,
+#howto_use_validate li,
+#howto_use_validate table
+ {
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 16px;
+  line-height: initial;
+
+  margin-top: 0.5em;
+  margin-bottom: 0;
+  padding-bottom: 0;
+}
+
+#howto_use_validate pre {
+  border-left: 2px solid blue;
+
+  background-color: #ffffa0;
+
+  margin-top:0;
+  padding-top:0;
+
+  padding-left: 2%;
+
+  font-size: 12px;
+}
+#howto_use_validate .explanation p {
+  font-size:0.7em;
+  text-align:left;
+  /* font-style: italic; */
+}
+
+/*setting for table in howto_use_validate*/
+#howto_use_validate td
+ {
+  font-size: 80%;
+}
+#howto_use_validate tr:nth-child(even) td {
+  background-color: rgb(120,120,120);
+}
+
+#howto_use_validate tr:nth-child(odd) td {
+  background-color: rgb(186, 129, 129);
+}
+
+/*explanation class for the widget inside*/
+.explanation {
+  display: block;
+
+  padding-top:0px;
+  padding-left:10px;
+  padding-right:0;
+  padding-bottom:0;
+
+  margin-top: 0;
+  margin-left: 10px;
+  margin-right: 0;
+  margin-bottom:1em;
+  margin-right:0;
+
+  border: 1px dashed black;
+  
+  background-color: #f9dddd;
+}
+
+.explanation a {
+  display: inherit;
+  font-size: 0.8em;
+}
+
 /*//////////////////////////////////*/
-/*START CSS for form2*/
-#form2 form {
+/*START CSS for form1, and it's errorBox*/
+#form1 form,
+#form1 .errorBox,
+#form1 .successBox {
   /* Just to center the form on the page */
   margin: 0 auto;
-  width: 400px;
+  width: 500px;
   /* To see the outline of the form */
   padding: 1em;
   border: 1px solid #CCC;
   border-radius: 1em;
 }
 
-#form2 form div + div {
-  /*helps 2 div get margin*/
+#form1 form p + p {
+  /*helps 2 p get margin*/
   margin-top: 0.5em;
 }
 
-#form2 label {
+#form1 label {
   /* To make sure that all labels have the same size and are properly aligned */
   display: inline-block;
-  width: 90px;
+  width: 170px;
   text-align: right;
 }
 
-#form2 input, 
-#form2 textarea {
+#form1 input, 
+#form1 textarea {
   /* To make sure that all text fields have the same font settings
      By default, textareas have a monospace font */
   font: 1em sans-serif;
 
   /* To give the same size to all text fields */
-  width: 300px;
+  width:300px;
   box-sizing: border-box;
 
   /* To harmonize the look & feel of text field border */
   border: 1px solid #999;
+
+  /*rounded the text field*/
+  border-radius:0.3em;
 }
 
-#form2 input:focus, 
-#form2 textarea:focus {
+#form1 input:focus, 
+#form1 textarea:focus {
   /* To give a little highlight on active elements */
   border-color: #000;
   border-width: 2.5px;
   background-color:palegoldenrod;
 }
 
-#form2 textarea {
+#form1 textarea {
   /* To properly align multiline text fields with their labels */
   vertical-align: top;
 
@@ -96,17 +199,69 @@ main > div {
   height: 5em;
 }
 
-#form2 .button {
+#form1 .submitButton {
   /* To position the buttons to the same position of the text fields */
-  padding-left: 90px; /* same size as the label elements */
+  padding-left: 180px; /* same size as the label elements */
 }
 
-#form2 button {
+#form1 button {
   /* This extra margin represent roughly the same space as the space
      between the labels and their text fields */
   margin-left: .5em;
 }
-/*FINISH CSS for form2*/
+
+#form1 input[type=text] {
+  -webkit-appearance: none;
+
+  border: 1px solid #333;
+  /* width:98%; */ /*This will overwrite width previously declared*/
+  margin: 0;
+  margin-left: 2%;
+
+  font-size: 90%;
+
+  -moz-box-sizing: border-box;
+  box-sizing: boder-box;
+}
+#form1 input[type=checkbox]{
+  width: initial; /*get initial box width to be minimized*/
+  
+  /*same setting as other input*/
+  -webkit-appearance: none;
+
+  margin: 0;
+  margin-left: 2%;
+
+  -moz-box-sizing: border-box;
+  box-sizing: boder-box;
+}
+/* although the novalidate is turned on, style is still effectively applied */
+#form1 input.invalid{
+  border-color:#900000;
+  background-color: #FDD;
+}
+
+#form1 input:focus.invalid {
+  outline: none;
+}
+
+#form1 .error {
+  width:98%;
+  margin: 0;
+  margin-left: 2%;
+  padding: 0;
+  font-size: 80%;
+  color: white;
+  background-color: #900;
+  border-radius: 0 0 5px 5px;
+
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+#form1 .error .active  {
+  padding. 0.3em;
+}
+/*FINISH CSS for form1*/
 
 /*START CSS for form3*/
 #form3 h1, h2, h3, h4 {
@@ -230,19 +385,7 @@ margin-top: 2px;
 
 /*START CSS for form5*/
 /* #form5 .explanation { */
-.explanation {
-  display: block;
-  margin-top:0px;
-  margin-left:inherit;
-  margin-bottom:1em;
-  font-size:0.8em;
-  text-align:left;
-  font-style: italic;
-}
-.explanation a {
-  display: inherit;
-  font-size: 0.8em;
-}
+
 
 #form5 .display {
   display:inline-block;
