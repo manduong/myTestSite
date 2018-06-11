@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="ManDuong">
+    <meta name="description" content="This is my very first website testing knowledge about HTML form using validate.js">
+    <meta name="og:description" content="This is my very first website testing knowledge about HTML form using validate.js">
+    <meta name="og:site_name" content="main-test-site-form-validate-script">
+    <title>My test page Form w/ validate</title>
+    <link rel="shortcut icon" href="icons/myFirstIcon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="stylesheets/myIndex.css" type="text/css">
+    <link rel="stylesheet" href="stylesheets/myExamFormWithPureValidate.css" type="text/css">
+    <!--BEGIN Required library to use the validation by script-->
+    <script type="text/javascript" src="scripts/validate.min.js"></script>
+    <!--END Required library to use the validation by script-->
+
+    <noscript>Webbrowser does not support javascript</noscript>
+  </head>
+  <body>
+    <header>
+      <h1>My HTML test for Form using validate.js</h1>
+      <a href='index.html'><img src="pictures/myLogo.png" alt='a simple MD logo'></a>
+    </header>
+    
+    <div class="headerMoreInfo">
+      <p>Using a <a href="http://rickharrison.github.io/validate.js/"><abbr title="Lightweight JavaScript form validation library inspired by CodeIgniter. No dependencies, just over 2kb gzipped, and customizable!">pure JavaScript library</abbr></a> to perform form validation</p>
+    </div>
+
+    <nav style="display:none">
+      <!--RESERVED-->
+    </nav>
+
+    <main>
+      <aside class='leftAside'>
+        <h2>markers in main</h2>
+        <hr>
+        <a href='#form1'>
+          form 1
+          <span class="markerBriefInfo">
+            An illustration like: rickharrison.github.io > validate.js
+          </span>
+        </a>
+        <br>
+        <hr>
+        <a href='#howto_use_validate'>How to use validate.js</a>
+      </aside>
+
+      <div id='content'>
+        <hr>
+        <div id="form1">
+          <h2>My testing form with validate.min.js script</h2>
+          <div class="successBox" style="display:none">
+              <!--Empty as beginning, will be filled when validating with result=success-->
+              If this sentence occurs, the document is broken.
+            </div>
+          <div class="errorBox" style="display:none">
+            <!--Empty as beginning, will be filled when validating with result=error-->
+            If this sentence occurs, the document is broken.
+          </div>
+          <form name="testForm1" action="#" method='GET' target='_self'>
+            <section class="fields"><!--Section of fields-->
+              <p>
+                <label for="requiredField">Required field: </label>
+                <input type="text" id="requiredField" name="requiredField" value=""> 
+              </p>
+              <p>
+                <label for="alphanumericField">AlphaNumeric field: </label>
+                <input type="text" id="alphanumericField" name="alphanumericField" value=""> 
+              </p>
+              <p>
+                <label for="passwordField">Password field: </label>
+                <input type="password" id="passwordField" name="passwordField" value=""> 
+              </p>
+              <p>
+                <label for="passwordConfirmField">Password Confirm field: </label>
+                <input type="password" id="passwordConfirmField" name="passwordConfirmField" value=""> 
+              </p>
+              <p>
+                <label for="emailField">Email field: </label>
+                <input type="text" id="emailField" name="emailField" value=""> 
+              </p>
+              <p>
+                <label for="minlengthField">min-length field: </label>
+                <input type="text" id="minlengthField" name="minlengthField" value=""> 
+              </p>
+              <p>
+                <label for="mustCheckbox">A-must checkbox: </label>
+                <input type="checkbox" id="mustCheckbox" name="mustCheckbox" value=""> 
+              </p>
+            </section>
+            <section class="submitButton"><!--Section of submit buttons-->
+              <button type='submit'>SubmitToValidate</button>
+              <button type='reset' onclick="clearTheBoxes('testForm1')">Reset fields</button>
+              <!--button with type='submit' helps to send form's data to server-->
+              <!--button with type='reset' helps to reset all fields in form to default values-->
+            </section>
+          </form>
+        </div>
+
+        <hr>
+        <div id="howto_use_validate">
+          <h2>validate[.min].js how-to use</h2>
+          <p class="explanation">the content is extracted from <a style="display:inline;" href="http://rickharrison.github.io/validate.js/" target="_blank"> rickharrison.github.io/validate</a> .</p>
+
+          <h3>First approaching:</h3>
+          <p>Include the JavaScript file in your source</p>
+          <pre>&lt;script type=&quot;text/javascript&quot; src=&quot;validate.min.js&quot;&gt;&lt;/script&gt;</pre>
+  
+          <p>Create the validation object with your desired rules. This needs to be in a <code>&lt;script&gt;</code> tag located just before your closing <code>&lt;/body&gt;</code> tag. The reason for this being that the DOM needs to have your form loaded before you can attach your rules.</p>
+  
+          <pre>
+var validator = new FormValidator('example_form', [{
+  name: 'req',
+  display: 'required',
+  rules: 'required'
+}, {
+  name: 'alphanumeric',
+  rules: 'alpha_numeric'
+}, {
+  name: 'password',
+  rules: 'required'
+}, {
+  name: 'password_confirm',
+  display: 'password confirmation',
+  rules: 'required|matches[password]'
+}, {
+  name: 'email',
+  rules: 'valid_email',
+  depends: function() {
+      return Math.random() > .5;
+  }
+}, {
+  name: 'minlength',
+  display: 'min length',
+  rules: 'min_length[8]'
+}], function(errors, event) {
+      if (errors.length > 0) {
+          // Show the errors
+      }
+});</pre>
+  
+          <div class="explanation">
+            <p>The <b>FormValidator</b><code> new FormValidator(formName, fields, callback)</code></p>
+            <p style="clear:both;">The <code>FormValidator</code> object is attached to the <code>window</code> upon loading validate.js. After creation, it will validate the <b>fields</b> on submission of the form named <b>formName</b>.</p>
+            <p>The <b>formName</b> passed in to <code>validate</code> must be the exact value of the <code>name</code> attribute of the form</p>
+            <pre>&lt;form name=&quot;example_form&quot;&gt;&lt;/form&gt;</pre>
+            <p>An array of <b>fields</b> will be used to perform validation on submission of the form. The array must contain objects containing these properties:</p>
+            <ul>
+              <li>
+                <p>name (required) - The name attribute of the element.</p>
+                <pre class="inline">&lt;input name=&quot;email&quot; /&gt;</pre>
+              </li>
+              <li>
+                <p>display (optional) - The name of the field as it appears in error messages. If not present in the object, the <b>name</b> parameter will be used.</p>
+                <p>Example: If your field name is user, you may choose to use a display of "Username."</p>
+              </li>
+              <li>
+                <p>rules (required) - One or more rules, which are piped together.</p>
+                <p>Example - <code>required|min_length[8]|matches[password_confirm]</code></p>
+              </li>
+              <li>
+                <p>depends (optional) - A function that runs before the field is validated. If the function returns false, the field is never validated against the declared rules.</p>
+                <pre class="inline">depends: function(field) {
+  return Math.random() > .5;
+}</pre>
+              </li>
+            </ul>
+          </div>
+          
+          <p>A <b>callback</b> will always be executed after validation. Your <b>callback</b> should be ready to accept two parameters.</p>
+          <ul class="inline">
+              <li>
+                  <p>errors - An array of errors from the validation object. If the length > 0, the form failed validation</p>
+                  <p>This array will contain javascript objects with up to four properties:<br />
+                  - id: The id attribute of the form element<br />
+                  - name: The name attribute of the form element<br />
+                  - message: The error message to display<br />
+                  - messages: The error message of every failed validation of the given field to display<br />
+                  - rule: The rule that prompted this error<br /></p>
+              </li>
+              <li>event - If the browser supports it, the onsubmit event is passed in.</li>
+          </ul>
+          <pre>
+function(errors, event) {
+  if (errors.length > 0) {
+    var errorString = '';
+
+    for (var i = 0, errorLength = errors.length; i &lt; errorLength; i++) {
+      errorString += errors[i].message + '&lt;br /&gt;';
+    }
+
+    el.innerHTML = errorString;
+  }
+}</pre>
+
+          <h3>Custom validation rules:</h3>
+          <p><code>validate.js</code> supports the ability for you to include your own validation rules. This will allow you to extend validate.js to suit your needs. A common example of this would be checking the strength of a password.</p>
+          <p>First, you need to add another rule to the field. It must always be prefaced with "callback_"</p>
+          <pre class="inline">rules: 'required|callback_check_password'</pre>
+          <p>Then you must call <tt>registerCallback</tt> on your instance of the <tt>FormValidator</tt> with the name of your custom rule and a function taking one parameter. This function will be called with one argument, the value of the field. If the value passes your custom validation, return true, otherwise return false. You can set a message for this rule using the <tt>setMessage</tt> method as described below.</p>
+          <pre class="inline">validator.registerCallback('check_password', function(value) {
+  if (passwordIsStrong(value)) {
+      return true;
+  }
+
+  return false;
+})
+.setMessage('check_password', 
+            'Please choose a stronger password using at least 1 number.');</pre>
+  
+          <p><b>Callbacks behave according to the following rules:</b><br />
+              #1. If the required rule is present, a callback will be fired once all other validation rules pass.<br />
+              #2. If the field is not required and it is empty, the callback will not be called unless condition #3 is met.<br />
+              #3. A callback will always be called if it is preceded by an '!' i.e. rules: '!callback_myCustomCallback'<br /><br />
+          </p>
+
+          <h3>Available methods:</h3>
+          <p><b>setMessage</b> <code>validator.setMessage(rule, message)</code></p>
+          <p style="clear:both;">All of the default error messages are located at the top of validate.js in a defaults object. If you wish to change a message application wide, you should do so in the source code. If you would like to change a message for a form, use this method on your instance of the <tt>FormValidator</tt> object. When setting a new <b>message</b>, you should pass in %s, which will be replaced with the <tt>display</tt> parameter from the fields array</p>
+          <pre>validator.setMessage('required', 'You must fill out the %s field.');</pre>
+          
+          <p><b>registerCallback</b> <code>validator.registerCallback(rule, callback)</code></p>
+          <p style="clear:both;">Used to pair a custom <b>rule</b> in the fields array with a <b>callback</b> to be executed upon validation.</p>
+          <pre>validator.registerCallback('check_email', function(value) {
+  if (emailIsUnique(value)) {
+    return true;
+  }
+
+  return false;
+});</pre>
+  
+          <p><b>registerConditional</b> <code>validator.registerConditional(name, callback)</code></p>
+          <p style="clear:both">An alternate syntax for declaring <b>depends</b> functions, which determine whether or not to validate a given field.
+          <pre class="inline">{
+  name: 'first_name',
+  rules: 'required',
+  depends: 'checkForRandomNumber'
+}</pre>
+  
+          <pre class="inline">validator.registerConditional('checkForRandomNumber', function(field) {
+  return Math.random() > .5;
+});</pre>
+
+          <h3>Available rules:</h3>
+          <table>
+              <colgroup>
+                  <col style="width:10%;">
+                  <col style="width:60%;">
+                  <col style="width:5%;">
+                  <col style="width:25%;">
+              </colgroup>
+              <thead>
+                  <tr>
+                      <th><span>Rule</span></th>
+                      <th><span>Description</span></th>
+                      <th><span>Param</span></th>
+                      <th><span>Example</span></th>
+                  </tr>
+              </thead>
+              <tbody>
+                  <tr>
+                      <td>required</td>
+                      <td>returns false if the form element is empty.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>matches</td>
+                      <td>returns false if the form element value does not match the one in the parameter.</td>
+                      <td>yes</td>
+                      <td>matches[other_element]</td>
+                  </tr>
+      
+                  <tr>
+                      <td>valid_email</td>
+                      <td>returns false if the form element value is not a valid email address.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>valid_emails</td>
+                      <td>returns false if any value provided in a comma separated list is not a valid email.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>min_length</td>
+                      <td>returns false if the form element value is shorter than the parameter.</td>
+                      <td>yes</td>
+                      <td>min_length[6]</td>
+                  </tr>
+      
+                  <tr>
+                      <td>max_length</td>
+                      <td>returns false if the form element value is longer than the parameter.</td>
+                      <td>yes</td>
+                      <td>max_length[8]</td>
+                  </tr>
+      
+                  <tr>
+                      <td>exact_length</td>
+                      <td>returns false if the form element value length is not exactly the parameter.</td>
+                      <td>yes</td>
+                      <td>exact_length[4]</td>
+                  </tr>
+      
+                  <tr>
+                      <td>greater_than</td>
+                      <td>returns false if the form element value is less than the parameter after using parseFloat.</td>
+                      <td>yes</td>
+                      <td>greater_than[10]</td>
+                  </tr>
+      
+                  <tr>
+                      <td>less_than</td>
+                      <td>returns false if the form element value is greater than the parameter after using parseFloat.</td>
+                      <td>yes</td>
+                      <td>less_than[2]</td>
+                  </tr>
+      
+                  <tr>
+                      <td>alpha</td>
+                      <td>returns false if the form element contains anything other than alphabetical characters.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>alpha_numeric</td>
+                      <td>returns false if the form element contains anything other than alpha-numeric characters.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>alpha_dash</td>
+                      <td>returns false if the form element contains anything other than alphanumeric characters, underscores, or dashes.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>numeric</td>
+                      <td>returns false if the form element contains anything other than numeric characters.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>integer</td>
+                      <td>returns false if the form element contains anything other than an integer.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>decimal</td>
+                      <td>returns false if the form element contains anything other than a decimal.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>is_natural</td>
+                      <td>returns false if the form element contains anything other than a natural number: 0, 1, 2, 3, etc.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>is_natural_no_zero</td>
+                      <td>returns false if the form element contains anything other than a natural number, but not zero: 1, 2, 3, etc.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>valid_ip</td>
+                      <td>returns false if the supplied IP is not valid.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>valid_base64</td>
+                      <td>returns false if the supplied string contains anything other than valid Base64 characters.</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>valid_credit_card</td>
+                      <td>returns false if the supplied string is not a valid credit card</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>valid_url</td>
+                      <td>returns false if the supplied string is not a valid url</td>
+                      <td>no</td>
+                      <td></td>
+                  </tr>
+      
+                  <tr>
+                      <td>is_file_type</td>
+                      <td>returns false if the supplied file is not part of the comma separated list in the paramter</td>
+                      <td>yes</td>
+                      <td>is_file_type[gif,png,jpg]</td>
+                  </tr>
+              </tbody>
+          </table>
+
+          <h3>This testing form uses version:</h3>
+          <p><b>2.0.0 - 09/20/15</b> 
+            <span class="explanation">refer to <a style="display:inline;" href="http://rickharrison.github.io/validate.js/">validate.js</a> for latest version</span>
+          </p>
+
+
+
+
+        </div>
+
+      </div>
+
+
+      <aside class='rightAside' style="display:none">
+        <h2>reference</h2>
+        <a href='#section1'>section 1</a>
+      </aside>
+    </main>
+
+    <footer>
+      <div id="contact">
+        <address>
+            <p>Author: Man Duong</p>
+            <a href="mailto:lightningstorm0310@gmail.com?cc=name2@nowhere.com&subject=Always%20learn%20questions&body=HAHAHAHA">
+              Email me if any
+            </a>
+        </address>
+      </div>
+    </footer>
+
+
+<!--########################-->
+    <script>
+      (function(){
+        var leftAside = document.getElementsByClassName("leftAside")[0];
+
+        document.addEventListener("load", (function(){
+          // //goto end of page if this is first time to go
+          // if(document.URL.split("#").length < 2) {
+          //   scrollTo(0, document.body.scrollHeight);
+          // }else{
+          //   //do-nothing
+          // }
+          // //or, simply: window.location.hash
+
+          //if the window Y offset is not 0, it's in middle of the page, then the leftAside (navigator) should be move to 0
+          if(window.pageYOffset > 20){
+            leftAside.style.top="0";
+          } 
+        })());
+
+      })();
+    </script>
+    <!--BEGIN my script to control the validation of the document, must be here-->
+    <script type="text/javascript" src="scripts/myExamFormWithPureValidate.js"></script>
+    <!--END my script to control the document-->
+  </body>
+</html>

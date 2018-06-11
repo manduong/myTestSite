@@ -10,6 +10,7 @@
     <link rel="shortcut icon" href="icons/myFirstIcon.ico" type="image/x-icon">
     <link rel="stylesheet" href="stylesheets/myIndex.css" type="text/css">
     <link rel="stylesheet" href="stylesheets/myForms.css" type="text/css">
+    <noscript>Webbrowser does not support javascript</noscript>
   </head>
   <body>
     <header>
@@ -20,6 +21,7 @@
     <nav style="display:none">
       <!--RESERVED-->
     </nav>
+
     <!--
       Some common attributes of elements in a form
       . autofocus (default:false): auto focused when the page load, only 1 element of whole form has this
@@ -28,17 +30,28 @@
       . name="a-name" : is the name of the element, this is submitted with form data.
       . value="a-value" : provides the widget's initial value.
     -->
-
-
-
-
     <main>
       <aside class='leftAside'>
         <h2>markers in main</h2>
-        <a href='#form1'>form 1</a>
+        <a href='#form1'>form 1<span class="asideBrief">A</span></a>
         <a href='#form2'>form 2</a>
         <a href='#form3'>form 3</a>
         <a href='#form4'>form 4</a>
+        <a href='#form5'>form 5</a>
+        <a href='#form6'>form 6</a>
+        <a href='#form7'>form 7</a>
+        <a href='#form8'>form 8</a>
+        <a href='#form9'>form 9</a>
+        <hr>
+        <p>
+          <a href="myExamFormWithPureValidate.html">
+            <strong>Special case</strong>
+            <span class="markerBriefInfo">
+              An test-form using (free-license) pure JavaScript to validate.
+            </span>
+          </a>
+        </p>
+        <hr>
       </aside>
 
       <div id='forms'>
@@ -164,6 +177,10 @@
                 <input type="text" id="text1" value="I'm default text" name="text1">
               </p>
               <p>
+                <label for="text1a">A basic text field, with 'value' as default value (required):</label>
+                <input type="text" id="text1a" value="I'm default text" name="text1" required>
+              </p>
+              <p>
                 <label for="text2">A basic text field, add 'placeholder' as guiding:</label>
                 <input type="text" id="text2" placeholder="Input any text here..., default='NOTHING'" value="NOTHING" name="text2">
               </p>
@@ -214,7 +231,7 @@ Default line 2
               </p>
             </section>
 
-            <section>
+            <section class="dropdownList">
               <h4>Drop-down lists</h4>
               <p>HTML has 2 forms of drop-down content: the <strong>select box</strong>,and <abbr title="by binding a &lt;datalist&gt; to a &lt;input type=text&gt;"><strong>autocomplete box</strong></abbr>.</p>
               <fieldset>
@@ -347,15 +364,352 @@ Default line 2
             </section>
 
             <section>
-              <p>
+              <h4>Buttons</h4>
+              <fieldset>
+                <legend>group by &lt;button type=*&gt;</legend>
                 <button type="submit">Submit for nothing</button>
                 <button type="reset">Reset all fields</button>
+                <button type="button" onclick="
+                  (function(){
+                    window.scrollTo(0, 0);
+                  })();"
+                >GotoTop</button>
+              </fieldset>
+              <fieldset>
+                <legend>group by &lt;input type=*&gt;</legend>
+                <input type="submit" value="Submit for nothing">
+                <input type="reset" value="Reset all fields">
+                <input type="button" value="GotoTop" onclick="
+                  (function(){
+                    window.scrollTo(0, 0);
+                  })();"
+                >
+              </fieldset>
+            </section>
+          </form>
+        </div>
+      
+        <hr>
+        <div id="form5">
+          <h2>form5: some advanced widgets</h2>
+          <form action="#form5" method="POST" target="_self" enctype="multipart/form-data"
+                onsubmit="//alert(document.forms[4].action);"
+          >
+            <h3>Some advanced widgets</h3>
+            <section class="form5_1">
+              <h4>Input with validation</h4>
+              <p>
+                <label for="form5.number.1">input number in a text-field, Age:</label>
+                <input type="number" id="form5.number.1" name="number_valid" value=21
+                       min=15 max=60 step=0.5
+                >
+                <span class=explanation>
+                  Constrain: inpus as text, floating number, min=15, max=60, step=0.5
+                </span>
               </p>
+              
+              <p>
+                <label for="form5Number2">input number from a slider, TOEIC Score:</label>
+                <input type="range" id="form5Number2" name="number_valid" value=450
+                        min=10 max=990 step=10
+                        oninput="
+                          var sliderId = document.querySelector('#form5Number2');
+                          var displayClass = document.querySelector('.displayForm5Number2');
+                          displayClass.textContent = sliderId.value;
+                        "
+                >
+                <span class="display displayForm5Number2"></span>
+                <span class=explanation>
+                  Constrain: inpus as slide, floating number, min=10, max=990, step=10<br>
+                  Problem: Visual feedback is not default displayed, should have a &lt;span&gt; and JavaScript to display a call-back value from that slider
+                </span>
+              </p>
+
+            </section>
+
+            <section>
+              <h4>Some pickers</h4>
+              <ul>Notice:
+                <li class="explanation">For pickers as date-time types, still there is poor support even in FireFox, take care!</li>
+              </ul>
+
+              <p>
+                <label for="form5DateTime1">input date-time in text-field, date:</label>
+                <input type="date" id="form5DateTime1" name="datetime"
+                        oninput="document.querySelector('.displayForm5DateTime1').textContent = 
+                                 document.querySelector('#form5DateTime1').value;"
+                >
+                <span class="display displayForm5DateTime1"></span>
+              </p>
+              <p>
+                <label for="form5DateTime2">input date-time in text-field, datetime:</label>
+                <input type="datetime" id="form5DateTime2" name="datetime">
+                <span class="explanation">HTML5, not supported well</span>
+              </p>
+              <p>
+                <label for="form5DateTime3">input date-time in text-field, datetime-local:</label>
+                <input type="datetime-local" id="form5DateTime3" name="datetime">
+                <span class="explanation">HTML5, not supported well</span>
+              </p>
+              <p>
+                <label for="form5DateTime4">input month in text-field, month:</label>
+                <input type="month" id="form5DateTime4" name="datetime">
+                <span class="explanation">HTML5, not supported well</span>
+              </p>
+              <p>
+                <label for="form5DateTime5">input month in text-field, week:</label>
+                <input type="week" id="form5DateTime5" name="datetime">
+                <span class="explanation">HTML5, not supported well</span>
+              </p>
+              <p>
+                <label for="form5DateTime6">input time in text-field, time:</label>
+                <input type="time" id="form5DateTime6" name="datetime"
+                        oninput="document.querySelector('.displayForm5DateTime6').textContent = 
+                        document.querySelector('#form5DateTime6').value;"
+                >
+                <span class="display displayForm5DateTime6"></span>
+              </p>
+              <p>
+                <label for="form5Color">choose the color:</label>
+                <input type="color" id="form5Color" name="color"
+                       oninput="document.querySelector('.displayForm5Color').textContent = 
+                                document.querySelector('#form5Color').value;"
+                >
+                <span class="display displayForm5Color"></span>
+              </p>
+              <p>
+                <label for="form5file">choose the file:</label>
+                <input type="file" id="form5file" name="file" multiple
+                       oninput="document.querySelector('.displayForm5File').textContent = 
+                                document.querySelector('#form5file').value.replace(/c:\\fakepath\\/i,'');"
+                >
+                <span class="display displayForm5File"></span>
+                <span class="explanation">
+                  <u>Notice1</u>: because of security matter, the info of full-path for file cannot be retrieved: C:\fakepath\filename.<br>
+                  <u>Notice2</u>: if multiple is enable, the value returns a list of filenames.<br>
+                  <u>Notice3</u>: because HTTP is a text protocol, sending a binary data (file) requires special (1) 'method=POST', (2) 'enctype=multipart/form-data'
+                </span>
+              </p>
+              <p>
+                <label for="form5Hidden">Something's hidden here:</label>
+                <input type="hidden" id="form5Hidden" name="hidden" value="XXXXXX">
+                <span class="explanation">
+                  This is useful when users want to send something with the form but not display it.
+                </span>
+              </p>
+            </section>
+
+            <section>
+              <h4>displaying progress</h4>
+              <p>
+                <label for="progress">e.g. for a progress bar:</label>
+                <progress id="progress" max=100 value=69>69 %</progress>
+              </p>
+              <p>
+                <label for="meter">e.g. for a meter bar:</label><br>
+                <meter id="meter" min="0" max="100" value="0" low="33" high="66" optimum="50">0</meter><span>0</span><br>
+                <meter id="meter1" min="0" max="100" value="30" low="33" high="66" optimum="50">30</meter><span>30</span><br>
+                <meter id="meter2" min="0" max="100" value="40" low="33" high="66" optimum="50">40</meter><span>40</span><br>
+                <meter id="meter3" min="0" max="100" value="50" low="33" high="66" optimum="50">50</meter><span>50</span><br>
+                <meter id="meter4" min="0" max="100" value="60" low="33" high="66" optimum="60">60</meter><span>60</span><br>
+                <meter id="meter5" min="0" max="100" value="70" low="33" high="66" optimum="60">70</meter><span>70</span><br>
+                <meter id="meter6" min="0" max="100" value="90" low="33" high="66" optimum="60">90</meter><span>90</span><br>
+                <meter id="meter7" min="0" max="100" value="100" low="33" high="66" optimum="60">100</meter><span>100</span><br>
+              </p>
+            </section>
+
+            <section>
+              <button type="submit">Submit for nothing</button>
+              <button type="reset">Reset all fields</button>
+              <button type="button" onclick="
+                (function(){
+                  window.scrollTo(0, 0);
+                })();"
+              >GotoTop</button>
+              <p>
+              <label for="form5ImageButton">Image as a submit-button:</label>
+              <input type="image" id="form5ImageButton" name="imageButton" alt="An Image Submit Button" 
+                      src="pictures/testPicImgButton.png" width=300 height=200
+              >
+              <span class="explanation">
+                An image works same as submit button, more over, when submit, .x and .y are sent as position of the click.<br>
+                Notice: So far, cannot get name.x, name.y from submission by javascript, since the submit URL is available for server only.
+              </span>
+              </p>
+              </fieldset>
+            </section>
+          </form>
+        </div>
+
+        <div id="form6">
+          <h2>form6: form data validation</h2>
+          <form action="#form6" method="POST" target="_self" enctype="multipart/form-data">
+            <h3>built-in <a href="https://developer.mozilla.org/en-US/docs/Learn/HTML/Forms/Form_validation">form validation</a> (HTML5's feature)</h3>
+            <section id="f6s1">
+              <h4>Some testing widgets</h4>
+              <p>
+                <label for="f6s1_01">input with 'required' attribute</label>
+                <input type="text" id="f6s1_01" name="f6s1_01" value='something is enough' required>
+                <span class='explanation'>
+                  required = the form won't submit (and will display an error message) when the input is empty (the input will also be considered invalid).
+                </span>
+              </p>
+              <p>
+                <label for="f6s1_02">input with type=email, required</label>
+                <input type="email" id="f6s1_02" name="f6s1_02" value='me@mail, a@b.c' required multiple>
+              </p>
+              <p>
+                <label for="f6s1_03">input with type=url, required</label>
+                <input type="url" id="f6s1_03" name="f6s1_03" value='http://a.b' required>
+              </p>
+              <p>
+                <label for="f6s1_04">input with type=number, required</label>
+                <input type="number" id="f6s1_04" name="f6s1_04" value='0' required>
+              </p>
+              <p>
+                <label for="f6s1_05">input with type=number, required, min, max, step</label>
+                <input type="number" id="f6s1_05" name="f6s1_05" value='1' required
+                        min=3 max=13 step=2 >
+              </p>
+              <p>
+                <label for="f6s1_06">input with type=date, required, min, max, step</label>
+                <input type="date" id="f6s1_06" name="f6s1_06" value='2018-05-25' required
+                        min=2018-05-01 max=2018-05-31 step=3 >
+              </p>
+              <p>
+                <label for="f6s1_07">input with type=text, required, minlength maxlength, pattern</label>
+                <input type="text" id="f6s1_07" name="f6s1_07" value='MY_VALID_04' required
+                        maxlength=27 pattern="^M[A-Z0-9_]+" >
+              </p>
+            </section>
+
+            <section id="f6s2">
+              <h4>Simple form: tell me about yourself</h4>
+              <fieldset>
+                <legend>Title<abbr title="This field is mandatory">(*)</abbr></legend>
+                <input type="radio" id="f6s2_title_1" name="f6s2_title" value="Mr." required>
+                <label for="f6s2_title_1">Mr.</label>
+                <input type="radio" id="f6s2_title_2" name="f6s2_title" value="Ms." required>
+                <label for="f6s2_title_2">Ms.</label>
+              </fieldset>
+              <p>
+              <!-- The pattern attribute can act as a fallback for browsers which
+                    don't implement the number input type but support the pattern attribute.
+                    Please note that browsers that support the pattern attribute will make it
+                    fail silently when used with a number field.
+                    Its usage here acts only as a fallback -->
+                <label for="f6s2_age">How old are you?</label>
+                <input type="number" id="f6s2_age" name="f6s2_age" min=12 max=120 step=1 pattern="\d+">
+              </p>
+              <p>
+                <label for="f6s2_fruit">What's your favorite fruit?<abbr title="This field is mandatory">(*)</abbr></label>
+                <input type="text" id="f6s2_fruit" name="f6s2_fruit"
+                       list="f6s2_fruit_datalist"
+                       required
+                       pattern="[Bb]anana|[Cc]herry|[Aa]pple|[Ss]trawberry|[Ll]emon|[Oo]range">
+                <datalist id="f6s2_fruit_datalist">
+                  <option>Banana</option>
+                  <option>Cherry</option>
+                  <option>Apple</option>
+                  <option>Strawberry</option>
+                  <option>Lemon</option>
+                  <option>Orange</option>
+                </datalist>
+              </p>
+              <p>
+                <label for="f6s2_email">What's your email?</label>
+                <input type="email" id="f6s2_email" name="f6s2_email">
+              </p>
+              <p>
+                <label for="f6s2_more">Tell me more?</label>
+                <textarea id="f6s2_more" name="f6s2_more" maxlength=140 rows=5></textarea>
+              </p>
+            </section>
+            <section>
+              <button type="submit">Submit for nothing</button>
+              <button type="reset">Reset all fields</button>
+            </section>
+          </form>
+        </div>
+
+        <div id="form7">
+          <h2>form7: validation with customized error message</h2>
+          <form action="#form7" method="POST" target="_self" enctype="multipart/form-data">
+            <h3>using <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Constraint_API's_element.setCustomValidity()">
+                  constraint validation API</a>, keep default browser's validation</h3>
+            <section id="f7s1">
+              <h4>Simple testing invalid text field</h4>
+              <p>
+                <label for="f7s1_01">input with 'required' 'pattern' attributes</label>
+                <input type="text" id="f7s1_01" name="f7s1_01" value='wrong-pattern>'
+                      required pattern="[a-zA-Z_-]+">
+                <span class='explanation'>
+                  This widget has a customized error message, using JavaScript to addEventListener an input event to method named 'setCustomValidity(new-error)'.<br>
+                  Must choose the correct boolean <a href="https://developer.mozilla.org/en-US/docs/Web/API/ValidityState">validity state property</a> to set the message.
+                </span>
+              </p>
+             </section>
+            <section>
+              <button type="submit">Submit for nothing</button>
+              <button type="reset">Reset all fields</button>
+            </section>
+          </form>
+        </div>
+
+        <div id="form8">
+          <h2>form8: validating forms using JavaScript</h2>
+          <form action="#form8" method="POST" target="_self" enctype="multipart/form-data"
+                novalidate >
+            <h3>using <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation#Constraint_API's_element.setCustomValidity()">
+              constraint validation API</a>, <abbr title="form with attribute 'novalidate'">turn-off browser's validation</abbr></h3>
+            <section id="f8s1">
+              <h4>Simple testing invalid text field</h4>
+              <p>
+                <label for="f8s1_01">input with 'required' 'pattern' attributes:</label>
+                <input type="text" id="f8s1_01" name="f8s1_01" value='wrong-pattern>'
+                      required pattern="[a-zA-Z_-]+">
+                <span class='error' aria-live="polite">a</span>
+                <span class='explanation'>
+                  This simple form uses the novalidate attribute to turn off the browser's automatic validation; this lets our script take control over validation. However, this doesn't disable support for the constraint validation API nor the application of the CSS pseudo-class :valid, :invalid, :in-range and :out-of-range classes. That means that even though the browser doesn't automatically check the validity of the form before sending its data, you can still do it yourself and style the form accordingly.<br>
+                  The aria-live attribute makes sure that our custom error message will be presented to everyone, including those using assistive technologies such as screen readers.
+                </span>
+              </p>
+             </section>
+            <section>
+              <button type="submit">Submit for nothing</button>
+              <button type="reset">Reset all fields</button>
+            </section>
+          </form>
+        </div>
+
+        <div id="form9">
+          <h2>form9: validating forms using JavaScript (more code)</h2>
+          <form novalidate action="#form9" method="POST" target="_self" enctype="multipart/form-data">
+            <h3>using pure JavaScript to validate</h3>
+            <section id="f9s1">
+              <h4>Simple testing invalid text field</h4>
+              <p>
+                <label for="f9s1_01">input text:</label>
+                <input type="text" id="f9s1_01" name="f9s1_01" value='wrong-pattern>'>
+                <span class='error' aria-live="polite">a</span>
+                <span class='explanation'>
+                  Simply use input text, all validation (type, pattern, ...) is controlled by JavaScript, alot of code used here.<br>
+                  Also, the CSS changes a little when :valid and :invalid are now real class (not a pseudo class any more)<br>
+                  This example demonstrates the previous form.
+                </span>
+              </p>
+             </section>
+            <section>
+              <!-- Some legacy browsers need to have the `type` attribute
+              explicitly set to `submit` on the `button`element -->
+              <button type="submit">Submit for nothing</button>
+              <button type="reset">Reset all fields</button>
             </section>
           </form>
         </div>
       </div>
-      <aside class='rightAside'>
+
+      <aside class='rightAside' style="display:none">
         <h2>reference</h2>
         <a href='#section1'>section 1</a>
       </aside>
@@ -375,5 +729,80 @@ Default line 2
 
 <!--########################-->
   <script src="scripts/myForms.js"></script>
+  <script>
+    (function(){
+      document.addEventListener("load", (function(){
+        //goto end of page if this is first time to go
+        if(document.URL.split("#").length < 2) {
+          scrollTo(0, document.body.scrollHeight);
+        }else{
+          //do-nothing
+        }
+        //or, simply: window.location.hash
+
+        //if the window Y offset is not 0, it's in middle of the page, then the leftAside (navigator) should be move to 0
+        if(window.pageYOffset > 20){
+          leftAside.style.top="0";
+        } 
+      })());
+
+      window.onload = function(){
+        console.log("\n".concat("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX","\n",
+        "name=",window.name,"\n",
+        "status=",window.status,"\n",
+        "screen.colorDepth=",window.screen.colorDepth,"\n",
+        "screen.pixelDepth=",window.screen.pixelDepth,"\n",
+        "screenLeft=",window.screenLeft,"\n",
+        "screenTop=",window.screenTop,"\n",
+        "pageXOffset/Y           =",window.pageXOffset," vs. ",window.pageYOffset,"\n",
+        "screenX/Y               =",window.screenX," vs. ",window.screenY,"\n",
+        "innerHeight/Width       =",window.innerHeight," vs. ",window.innerWidth,"\n",
+        "outerHeight/Width       =",window.outerHeight," vs. ",window.outerWidth,"\n",
+        "screen.availHeight/Width=",window.screen.availHeight," vs. ",window.screen.availWidth,"\n",
+        "screen.height           =",window.screen.height," vs. ",window.screen.width,"\n",
+        "length=#iframe=",window.length,"\n",
+        "location=",window.location,"\n",
+        "location.hash=",window.location.hash,"\n",
+        "sessionStorage.length=",window.sessionStorage.length,"\n",
+        "localStorage.length=",window.localStorage.length,"\n",
+        "navigator.appCodeName=",window.navigator.appCodeName,"\n",
+        "navigator.appName=",window.navigator.appName,"\n",
+        "navigator.appVersion=",window.navigator.appVersion,"\n",
+        "navigator.cookieEnabled=",window.navigator.cookieEnabled,"\n",
+        "navigator.onLine=",window.navigator.onLine,"\n",
+        "navigator.product=",window.navigator.product,"\n",
+        "navigator.productSub=",window.navigator.productSub,"\n",
+        "navigator.JavaEnabled=",window.navigator.javaEnabled(),"\n",
+      ))
+      }
+      
+      //a very first load for sliders (if not, the slider won't update the span to display current value)
+      var sliderId = document.querySelector('#form5Number2');
+      var displayClass = document.querySelector('.displayForm5Number2');
+      displayClass.textContent = sliderId.value;
+
+      // //testing some first values
+      // var target = document.forms[0].attributes;
+      // var myStr = target + ":<br>";
+      // for(var i =0; i < target.length; i++){
+      //    myStr += target[i].name + " = " + target[i].value + "<br>";
+      //   // myStr += tmpv.name + " = " + tmpv.value + "<br>";
+      // }
+      // document.querySelector('.displayForm5ImageButton').innerHTML = myStr; 
+
+      //example mapping the oninput of a form validity to method setCustomValidity to customize the error message
+      var theFieldID = document.getElementById('f7s1_01');
+      theFieldID.addEventListener("input", function(event) {
+        // if(theFieldID.validity.patternMismatch){
+        console.log(theFieldID.checkValidity())
+        if(! theFieldID.checkValidity()) {
+          theFieldID.setCustomValidity("Yêu cầu chữ, số, và dấu - _ thôi!");
+        }else{
+          theFieldID.setCustomValidity('');
+        }
+      });
+
+    })();
+  </script>
   </body>
 </html>
