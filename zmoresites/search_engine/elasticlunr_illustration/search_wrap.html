@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta name="author" content="ManDuong">
+    <meta name="description" content="This is an testing searching engine using elasticlunr.js">
+    <meta name="og:description" content="This is an testing searching engine using elasticlunr.js">
+    <meta name="og:site_name" content="searching-engine-1">
+    <title>Searching engine with elasticlunr</title>
+    <link rel="shortcut icon" href="icons/myFirstIcon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="stylesheets/search_wrap.css" type="text/css">
+    <!--BEGIN Required library to use the validation by script-->
+    <script type="text/javascript" src="scripts/elasticlunr.js"></script>
+    <!--END Required library to use the validation by script-->
+
+    <noscript>Webbrowser does not support javascript</noscript>
+  </head>
+  <body>
+    <header>
+      <h1>My simple testing searching engine with elasticlunr.js</h1>
+      <a href='file://D:/E.Working/prj.180324.html_css_js_perl_python/test/testHTML/index.html'><img src="pictures/myLogo.png" alt='a simple MD logo'></a>
+    </header>
+    
+    <div class="headerMoreInfo">
+      <p>Using a <a href="http://elasticlunr.com/"><abbr title="Lightweight full-text search engine in Javascript for browser search and offline search.">Elasticlunr.js</abbr></a> to perform searching<p>
+      <p>Using <a href="https://www.w3schools.com/js/js_json_files.asp"><abbr title="This example reads a menu from myTutorials.js, and displays the menu in a web page">JSON Function Files</abbr></a> to pass a JSON data into the document<p>
+    </div>
+
+    <nav style="display:none">
+      <!--RESERVED-->
+    </nav>
+
+    <main>
+      <aside class='leftAside'>
+        <h2>markers in main</h2>
+        <hr>
+        <a href='#searchbar'>
+          search bar
+          <span class="markerBriefInfo">
+            An illustration from w3schools</a>
+          </span>
+        </a>
+        <br>
+        <hr>
+        <a href='#howto_1'>How to use Elasticlunr.js</a>
+        <a href='#howto_2'>JSON Function Files</a>
+      </aside>
+
+      <div id='content'>
+        <hr>
+        <div id="searchbar">
+          <input type="text" name="search" placeholder="Search..">
+          <button type="button" onclick="myPerformSearch()">Search</button>
+          <button type="button" onclick="listAllQueries()">All</button>
+          <span class="explanation">For more search-bar demos, see more in <a href='https://www.w3schools.com/howto/howto_css_animated_search.asp'>w3schools how-to</a></span>
+        </div>
+        <div>
+          <form id="formUsrChooseMaxItemPerPage">
+            <label for="usrChooseMaxItemPerPage">Choose max item display per page: </label>
+            <input name="usrChooseMaxItemPerPage" type="radio" value="10" checked>10
+            <input name="usrChooseMaxItemPerPage" type="radio" value="20">20
+            <input name="usrChooseMaxItemPerPage" type="radio" value="30">30
+            <input name="usrChooseMaxItemPerPage" type="radio" value="40">40
+            <input name="usrChooseMaxItemPerPage" type="radio" value="50">50
+          </form>
+        </div>
+        <div id="dispBlockToGo">
+          <!--reserved for displaying the current block of items displayed-->
+        </div>
+        <hr>
+
+        <div id='seachstatistic'>
+        </div>
+        <hr>
+        
+        <ul id='searchreturn'>
+          <li id='returnid'>
+            <h3><a href='#' target="_blank">title</a></h3>
+            <p>
+              Content
+            </p>
+          </li>
+        </ul>
+
+        <div id="howto">
+          <hr>
+          <div id='howto_1'>
+            <h2>Elasticlunr[.min].js how-to use</h2>
+            <p class="explanation">the content is extracted from <a style="display:inline;" href="http://elasticlunr.com/docs/index.html" target="_blank">elasticlunr.com/docs/index.html</a> .</p>
+
+            <h3>First approaching:</h3>
+            <p>Include the JavaScript file in your source</p>
+          </div>
+
+          <hr>
+          <div id='howto_2'>
+            <h2>JSON Function Files</h2>
+            <p class="explanation">the content is extracted from <a style="display:inline;" href="https://www.w3schools.com/js/js_json_jsonp.asp" target="_blank">www.w3schools.com > js_json_jsonp</a> .</p>
+
+            <h3>First approaching:</h3>
+            <p>A common use of JSON is to read data from a web server, and display the data in a web page. </p>
+            <p>This chapter will teach you, in 4 easy steps, how to read JSON data, using function files.</p>
+            <p>This example reads a menu's content from myTutorials.js, and displays the menu in a web page:</p>
+<!--Notice the entities:
+Result 	Description 	                  Entity Name 	Entity Number
+    non-breaking space 	                &nbsp; 	&#160;
+< 	less than 	                        &lt; 	&#60;
+> 	greater than 	                      &gt; 	&#62;
+& 	ampersand 	                        &amp; 	&#38;
+" 	double quotation mark 	            &quot; 	&#34;
+' 	single quotation mark (apostrophe) 	&apos; 	&#39;
+¢ 	cent 	                              &cent; 	&#162;
+£ 	pound 	                            &pound; 	&#163;
+¥ 	yen 	                              &yen; 	&#165;
+€ 	euro 	                              &euro; 	&#8364;
+© 	copyright 	                        &copy; 	&#169;
+® 	registered trademark 	              &reg; 	&#174;
+Note: Entity names are case sensitive.
+-->
+<!-- This is the HTML code
+  <!DOCTYPE html>
+  <html>
+  <body>
+  
+  <div id="id01"></div>
+  <script>
+  function myFunction(arr) {
+      var out = "";
+      var i;
+      for(i = 0; i<arr.length; i++) {
+          out += '<a href="' + arr[i].url + '">' + 
+          arr[i].display + '</a><br>';
+      }
+      document.getElementById("id01").innerHTML = out;
+  }
+  </script>
+  
+  <script src="myTutorials.js"></script>
+  </body>
+  </html>
+-->
+              <pre>
+&lt;!DOCTYPE html>
+&lt;html>
+&lt;body>
+
+&lt;div id=&quot;id01&quot;>&lt;/div>
+&lt;script>
+function myFunction(arr) {
+  var out = &quot;&quot;;
+  var i;
+  for(i = 0; i&lt;arr.length; i++) {
+    out += &apos;&lt;a href=&quot;&apos; + arr[i].url + &apos;&quot;>&apos; + 
+    arr[i].display + &apos;&lt;/a>&lt;br>&apos;;
+  }
+  document.getElementById(&quot;id01&quot;).innerHTML = out;
+}
+&lt;/script>
+
+&lt;script src=&quot;myTutorials.js&quot;>&lt;/script>
+&lt;/body>
+&lt;/html></pre>
+
+            <p>The content of myTutorials.js:</p>
+            <pre>
+myFunction([
+{
+"display": "HTML Tutorial",
+"url": "https://www.w3schools.com/html/default.asp"
+},
+{
+"display": "CSS Tutorial",
+"url": "https://www.w3schools.com/css/default.asp"
+},
+{
+"display": "JavaScript Tutorial",
+"url": "https://www.w3schools.com/js/default.asp"
+},
+{
+"display": "SQL Tutorial",
+"url": "https://www.w3schools.com/sql/default.asp"
+},
+{
+"display": "PHP Tutorial",
+"url": "https://www.w3schools.com/php/default.asp"
+},
+{
+"display": "XML Tutorial",
+"url": "https://www.w3schools.com/xml/default.asp"
+}
+]) </pre>
+
+            <p>The result should be a very simple document with 6 links.</p>
+
+            <h3>Example explained</h3>
+            <ol>
+              <li>
+                <h4>Create an array of objects.</h4>
+                <p>Use an array literal to declare an array of objects.</p>
+                <p>Give each object two properties: display and url.</p>
+                <p>Name the array myArray:</p>
+                <pre>
+myArray = [
+{
+"display": "HTML Tutorial",
+"url": "https://www.w3schools.com/html/default.asp"
+},
+...
+]</pre>
+              </li>
+
+              <li>
+                <h4>Create a JavaScript function to display the array.  </h4>
+                <p>Create a function myFunction() that loops the array objects, and display the content as HTML links:</p>
+                <pre>
+function myFunction(arr) {
+  var out = &quot;&quot;;
+  var i;
+  for(i = 0; i &lt; arr.length; i++) {
+    out += &apos;&lt;a href=&quot;&apos; + arr[i].url + &apos;&quot;&gt;&apos; + arr[i].display + &apos;&lt;/a&gt;&lt;br&gt;&apos;;
+  }
+  document.getElementById(&quot;id01&quot;).innerHTML = out;
+}</pre>
+                <p>Call myFunction() with myArray as argument:</p>
+                <pre>myFunction(myArray);</pre>
+              </li>
+
+              <li>
+                <h4>Use an array literal as the argument (instead of the array variable): </h4>
+                <pre>myFunction([
+{
+"display": "JavaScript Tutorial",
+"url": "https://www.w3schools.com/js/default.asp"
+},
+...
+]); </pre>
+              </li>
+
+              <li>
+                <h4>Put the function in an external js file</h4>
+                <p>Put the function in a file named <b>myTutorials.js</b>:</p>
+                <pre>
+myFunction([
+  {
+  "display": "JavaScript Tutorial",
+  "url": "https://www.w3schools.com/js/default.asp"
+  },
+...
+]); </pre>
+                <p>Add the external script to your page (instead of the function call):</p>
+                <pre>&lt;script src=&quote;myTutorials.js&quote;&gt;&lt;/script&gt;</pre>
+              </li>
+            </ol>
+            
+          </div>
+        </div>
+
+      </div>
+
+
+      <aside class='rightAside' style="display:none">
+        <h2>reference</h2>
+        <a href='#section1'>section 1</a>
+      </aside>
+    </main>
+
+    <footer>
+      <div id="contact">
+        <address>
+            <p>Author: Man Duong</p>
+            <a href="mailto:lightningstorm0310@gmail.com?cc=name2@nowhere.com&subject=Always%20learn%20questions&body=HAHAHAHA">
+              Email me if any
+            </a>
+        </address>
+      </div>
+    </footer>
+
+
+<!--########################-->
+    <!--BEGIN my script to control the validation of the document, must be here-->
+    <script type="text/javascript" src="scripts/search_wrap.js"></script>
+    <!--END my script to control the document-->
+    <!--Apply to a database-->
+    <!--END Application-->
+    <!-- <script type="text/javascript" src="data/search_wrap_simple_example.js"></script> -->
+    <script type="text/javascript" src="data/example_data_1.js"></script>
+    <!--More from me-->
+
+    <script>
+      (function(){
+
+        var leftAside = document.getElementsByClassName("leftAside")[0];
+        document.addEventListener("load", (function(){
+          // //goto end of page if this is first time to go
+          // if(document.URL.split("#").length < 2) {
+          //   scrollTo(0, document.body.scrollHeight);
+          // }else{
+          //   //do-nothing
+          // }
+          // //or, simply: window.location.hash
+
+          //if the window Y offset is not 0, it's in middle of the page, then the leftAside (navigator) should be move to 0
+          if(window.pageYOffset > 50){
+            leftAside.style.top="0";
+          } 
+        })());
+
+      })();
+    </script>
+
+  </body>
+</html>
