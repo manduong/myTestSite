@@ -48,14 +48,16 @@
 
       <div id='content'>
         <hr>
-        <div id="searchbar">
-          <input type="text" name="search" placeholder="Search..">
-          <button type="button" onclick="myPerformSearch()">Search</button>
-          <button type="button" onclick="listAllQueries()">All</button>
-          <span class="explanation">For more search-bar demos, see more in <a href='https://www.w3schools.com/howto/howto_css_animated_search.asp'>w3schools how-to</a></span>
+        <div>
+          <form id="searchbar">
+            <button type="button" onclick="myPerformAll()">All</button>
+            <button type="button" onclick="myPerformSearch()">Search</button>
+            <input type="text" name="search" placeholder="Search..">
+            <span class="explanation">For more search-bar demos, see more in <a href='https://www.w3schools.com/howto/howto_css_animated_search.asp'>w3schools how-to</a></span>
+            </form>
         </div>
         <div>
-          <form id="formUsrChooseMaxItemPerPage">
+          <form id="formUsrChooseMaxItemPerPage" 
             <label for="usrChooseMaxItemPerPage">Choose max item display per page: </label>
             <input name="usrChooseMaxItemPerPage" type="radio" value="10" checked>10
             <input name="usrChooseMaxItemPerPage" type="radio" value="20">20
