@@ -1,0 +1,251 @@
+.my-icon {
+    background-image: url("../bg/BudgetMe.svg");
+    background-size: 100px;
+    background-repeat: no-repeat;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    /* border-bottom: #555 1px solid; */
+    /* height: 400px; */
+}
+#myMenu2 {
+    z-index: 5;
+    overflow:visible;
+    width:100%;
+    right:0;
+}
+#mainSide {
+    height:100%;
+    padding-bottom:65px;
+}
+#leftSide {
+    display:none;
+    position: fixed;
+    top:0;
+    left:0;
+    width:250px;
+}
+
+.my-notification {
+    position: relative;
+    top:-100%;
+    left:0;
+    width:250px;
+    opacity: 0;
+    /* background-color:palegreen; */
+    border-radius: 6px;
+    font-size:20px;
+    animation-name: my-notifying;
+    animation-duration: 2s;
+}
+@keyframes my-notifying {
+    0% {opacity:0.2}
+    30% {opacity:1}
+    60% {opacity:1}
+    100% {opacity:0}
+}
+
+@keyframes my-left-out {
+    0% {}
+    100% {left:-100%}
+}
+
+.my-center {
+    /* horizontally middle and vertically center */
+    display:flex;
+    justify-content: center;
+    align-items:center;
+    /* border: 1px solid lightsalmon; */
+}
+
+.my-title-icon {
+    position:absolute;
+    text-align: left;
+    height:60px;
+    width:60px;
+    top:0px;
+    left:110px;
+}
+.my-title-icon img {
+    width:30px;
+}
+
+.my-title-start {
+    position:absolute;
+    top:0px;
+    right:0px;
+}
+.my-title-end {
+    position:absolute;
+    top:20px;
+    right:0px;
+}
+
+.my-add-info {
+    position:absolute;
+    bottom:0;
+    right:0;
+    bottom:-4px;
+    width:100%;
+    /* right: 20%; */
+    color:red;
+    padding:0;
+}
+
+.my-tooltip {
+    position:relative;
+    display:inline-block;
+    overflow: visible;
+}
+.my-tooltip .my-tooltip-content {
+    visibility:hidden;
+    position: absolute;
+    width:125px;
+    top:100%;
+    right:0;
+    z-index: 2;
+    border-radius: 6px;
+    color:pink;
+    background-color: #555;
+    /* break the long string */
+    word-wrap: break-word;
+    
+    /* Fade in tooltip */
+    opacity: 0;
+    transition: opacity 0.5s;
+}
+/* Tooltip arrow */
+.my-tooltip .my-tooltip-content::before {
+    content: "";
+    position: absolute;
+    bottom:100%;
+    right: 16px;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color:  transparent transparent #555 transparent;
+  }
+.my-tooltip:hover .my-tooltip-content {
+    visibility: visible;
+    opacity: 1;
+}
+
+.my-login-tick-ng {
+    color:red;
+    position: absolute;
+    top:0;
+    right:-0;
+}
+
+.my-login-tick-ok {
+    color:green;
+    position: absolute;
+    top:0;
+    right:-0;
+}
+
+.my-user-title {
+    color:blue;
+    position: absolute;
+    top:0;
+    left:0;
+    font-size:10px;
+}
+
+.my-user-email {
+    color:purple;
+    position: absolute;
+    bottom:0;
+    left:0;
+    font-size:10px;
+}
+
+.my-div-for-sum-table {
+    float:left;
+    width:100%;
+}
+@media (min-width:1050px) { .my-div-for-sum-table{width:49.99999%} }
+@media (min-width:1450px){ .my-div-for-sum-table{width:33.33333%} }
+
+/* a Running Line Animation using CSS3 */
+/* https://codepen.io/nikhil/pen/aOMQaR */
+.line{
+    position: fixed;
+    top: 53px;
+    left: 0;
+    margin-left:100px;
+    width: 100%;
+    height: 3px;
+    background: rgb(7, 7, 170);
+    z-index: 9;
+    overflow: hidden;
+    animation: lineleft 5s 1;
+}
+.dot{
+    position: absolute;
+    height: 3px;
+    width: 5px;
+    background: rgb(255, 156, 156);
+    /* animation: dotleft 2s cubic-bezier(.72,.03,.75,.54) infinite; */
+    animation: dotleft 2s cubic-bezier(.72,.03,.75,.54) 1;
+}
+/* .dot1{
+    empty
+} */
+.dot2{
+    animation-delay: .4s;
+}
+.dot3{
+    animation-delay: .8s;
+}
+.dot4{
+    animation-delay: 1.2s;
+}
+.dot5{
+    animation-delay: 1.6s;
+}
+@keyframes dotleft {
+    0% {
+        left: 0%;
+    }
+    100% {
+        left: 100%;
+    }
+}
+@keyframes lineleft {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+
+/* hide the left slowly */
+.my-show-right-slowly {
+    animation: hideLeft 2s;
+}
+@keyframes hideLeft {
+    0% { margin-left: 250px;}
+    100% {margin-left: 0}
+}
+
+
+/*  */
+footer {
+    font-size:10px;
+    font-style: italic;
+    font-weight: bold;
+    position:fixed;
+    bottom:0;
+    right:0;
+    color:lightgrey;
+}
+
+footer::after {
+    content: " Powered by MD@RVC";
+    color:darkgray;
+}
