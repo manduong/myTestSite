@@ -16,16 +16,17 @@
 <link rel="stylesheet" href="css/my.css">
 <script src="src_main/my.js"></script>
 <script src="src_modules/login/logging.js"></script>
+<script src="src_modules/login/user_mod_info.js"></script>
 </head>
 <body class="bg" onload="my_onload()">
 <div class="my-icon"></div>
-<div id="myMenu2" class="w3-bar">
-    <div class="w3-bar-item" style="width:100px"></div>
+<div id="myMenu2" class="w3-bar" style="padding-left:100px">
+    <!-- <div class="w3-bar-item" style="width:100px"></div> -->
     
     <!-- <div class="w3-bar-item w3-mobile w3-button w3-round w3-right my-tooltip" onclick="my_login()"><i class="w3-text-indigo bi bi-box-arrow-left w3-xlarge"></i><span class="my-tooltip-content">Log-in</span></div> -->
     <!-- <div class="w3-bar-item w3-mobile w3-button w3-round w3-right my-tooltip" onclick="my_logout()"><i class="w3-text-indigo bi bi-box-arrow-right w3-xlarge"></i><span class="my-tooltip-content">Log-out</span></div> -->
 
-    <div class="w3-bar-item w3-mobile w3-button w3-round w3-right my-tooltip" onclick="dsp_login()" id="userDisplay">
+    <div class="w3-bar-item w3-mobile w3-button w3-round w3-right my-tooltip" onclick="dsp_mod_user_info()" id="userDisplay">
         <span class="w3-xlarge">NobodyButYou</span>
         <span class="my-user-email">Somebody@nowhere.com</span>
         <span class="my-user-title">Guess</span>
@@ -62,4 +63,5 @@
 ?>
 </body>
 <script src="src_main/globals.js"></script>
+<script src="src_modules/test/test.js"></script>
 </html>
