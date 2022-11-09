@@ -31,7 +31,7 @@
     $oO["rtnCode"] = "OK";
 
     $oO['mysql_connect_check'] = chk_mysql_connection();
-    $oO['simple_login_json_check'] = User_by_file::chk_login_json_data();
+    // $oO['simple_login_json_check'] = User_by_file::chk_login_json_data();
 
     $user = new User_by_file;
     $oO["login_email"] = $user->login_email;

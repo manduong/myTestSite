@@ -1,4 +1,3 @@
-let thisUser = "Somebody@nowhere.com";
 let aoMonth = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"]
 let flgStop = false;//stop signal caused by clicking Updating again
 let flgUpdHistory = false;//on the go downloading and saving data
@@ -46,8 +45,17 @@ function myTest(){
 //     }
 //    })
 
-    my_ajax_get("src_modules/test/database.php",[{}],function(rtnO){
-        let noFmtE = my_create("pre",JSON.stringify(rtnO,undefined,2),["w3-small"]);
+    // my_ajax_get("src_modules/test/database.php",[{}],function(rtnO){
+    //     let noFmtE = my_create("pre",JSON.stringify(rtnO,undefined,2),["w3-small"]);
+    //     eTop.appendChild(noFmtE);
+    //     // for(let tmpv in rtnO){
+    //     //     eTop.innerHTML += tmpv + " : " + rtnO[tmpv] + "<br>";
+    //     // }
+    // })
+
+    my_ajax_get("src_modules/test/rtn_server_vars.php",[{}],function(rtnO){
+        let noFmtE = my_create("pre",JSON.stringify(rtnO,undefined,2).replace(/\\n/g,"<br>"),["w3-small"]);
+
         eTop.appendChild(noFmtE);
         // for(let tmpv in rtnO){
         //     eTop.innerHTML += tmpv + " : " + rtnO[tmpv] + "<br>";
@@ -60,7 +68,6 @@ function my_onload(){
     //init_user();
     // retrieve_sum_by_recent_updated();
     dsp_menu();
-    upd_user_info();
 }
 
 //////////////////////////////////////// show/hide/toggle the top components (this page
@@ -293,7 +300,7 @@ function my_ajax_post_form(svrSrc,form,fnc){
     // Combine the pairs into a single string and replace all %-encoded spaces to
     // the '+' character; matches the behavior of browser form submissions.
     const urlEncodedData = urlEncodedDataPairs.join('&').replace(/%20/g, '+');
-    console.log(urlEncodedData)
+    // console.log(urlEncodedData)
 
     xmlhttp.addEventListener('error', (event) => {
         alert('Oops! Something went wrong.');
@@ -326,11 +333,84 @@ function my_ajax_post_form(svrSrc,form,fnc){
     xmlhttp.send(urlEncodedData);
 }
 
+function my_gen_form(cntData,func_act_after_submit){
+    if(!cntData.hasOwnProperty("cntData")) return; //
+    if(!cntData.hasOwnProperty("formAction")) cntData["formAction"] = ""; //
+    // console.log(cntData)
+    let eTop = my_create("div",undefined,["w3-container"]);
+    let eBtnClose = my_create("span","&times;",["w3-button","w3-display-topright"],{},{"onclick":"this.parentNode.parentNode.parentNode.remove()"})
+    // form content
+    let eForm = my_create("form",undefined,["w3-container","w3-padding-16"],{},{"method":"post"});
+    for(let formItem of cntData["cntData"]){
+        let mainItem = null;
+        let lblItem = null;
+        if(!formItem.hasOwnProperty("type")) {
+            if(formItem.hasOwnProperty("label")){
+                lblItem = my_create("label",formItem["label"]);
+                eForm.appendChild(lblItem);
+            }
+            continue;
+        }else{
+            if(formItem["type"] === "submit"){
+                mainItem =  my_create("button",formItem["label"],["w3-button","w3-block","w3-round","w3-indigo","w3-margin-top"]);
+                eForm.appendChild(mainItem);
+            }else if(formItem["type"] === "checkbox"){
+                mainItem =  my_create("input",formItem["label"],["w3-check"]);
+                lblItem = my_create("label",formItem["label"])
+                eForm.appendChild(mainItem);
+                eForm.appendChild(lblItem);
+            }else if(formItem["type"] === "select"){
+                if(!formItem.hasOwnProperty("options")) continue;
+                mainItem =  my_create("select",undefined,["w3-input"]);
+                lblItem = my_create("label",formItem["label"]);
+                eForm.appendChild(lblItem);
+                eForm.appendChild(mainItem);
+                for(let tmpv of formItem["options"]){
+                    mainItem.appendChild(my_create("option",tmpv,[],{},{"value":tmpv}))
+                }
+            }else{
+                mainItem =  my_create("input",undefined,["w3-input"]);
+                lblItem = my_create("label",formItem["label"]);
+                eForm.appendChild(lblItem);
+                eForm.appendChild(mainItem);
+            }
+        }
+        for(let tmpv in formItem){
+            if(tmpv === "label") continue;//for common element, label is a seperated ele
+            if(tmpv === "options") continue;//for select, ignore
+            if(tmpv === "display") continue;//for select, ignore
+            mainItem.setAttribute(tmpv,formItem[tmpv]);
+        }
+        if(formItem.hasOwnProperty("display") && formItem["display"] === "none"){
+            if(lblItem !== null) lblItem.style.display = "none";
+            if(mainItem !== null) mainItem.style.display = "none";
+        }
+    }
+    eForm.setAttribute("action",cntData["formAction"]);
+
+    // preserve a holder for information
+    eForm.appendChild(my_create("div","This holds some info.",["w3-light-grey","w3-margin-top","w3-center","form_return_info"],{"width":"100%"},{}));
+
+    // prevent default submit behavaior and redirect it to the submit-button
+    eForm.addEventListener("submit",function(event){
+        event.preventDefault(); 
+        my_ajax_post_form(cntData["formAction"],eForm,function(rtnO){
+            func_act_after_submit(eTop.parentNode.parentNode,rtnO);
+            // console.log(rtnO)
+        })
+        // event.target.parentNode.parentNode.parentNode.remove();// don't auto close form because OTP need sendingOTP to standstill
+    })
+
+    eTop.appendChild(eBtnClose)
+    eTop.appendChild(eForm);
+    return my_create("div",my_create("div",eTop,["w3-modal-content"]),["w3-modal"],{},{id:"id_login_form"});
+}
+
 ////////////////////////////
 function gen_menu_item(cntI){
     let eTop = my_create("div",undefined,["w3-bar-item", "w3-mobile","w3-round","w3-button","my-tooltip"]);
     if(cntI.hasOwnProperty("position")){
-        if(cntI["position"] === "right") eTop.classList.add("w3-right");
+        if(cntI["position"].search("right") > -1) eTop.classList.add("w3-right");
     }
     if(cntI.hasOwnProperty("text")){
         if(cntI["text"] !== ""){
@@ -359,15 +439,23 @@ function dsp_menu(){
     my_ajax_get("./src_modules/menu/menu.php",[{}],function(rtnO){
         if(!rtnO.hasOwnProperty("cntData")) return;
         for(let tmpv of rtnO["cntData"]){
-            document.getElementById("myMenu2").appendChild(gen_menu_item(tmpv));
+            if(tmpv.hasOwnProperty("position") && tmpv["position"] === "rightright"){
+                document.getElementById("myMenu2").insertBefore(gen_menu_item(tmpv),document.getElementById("myMenu2").childNodes[0]);
+            }else{
+                document.getElementById("myMenu2").appendChild(gen_menu_item(tmpv));
+            }
         }
+        if(rtnO.hasOwnProperty("testMenu")){
+            dsp_test_menu(rtnO["testMenu"]);
+        }
+        // => 
+        upd_user_info();
     });
 }
 
 ///////////////////////////////
 function upUserDisplay(oData){
     if(document.getElementById("userDisplay") === null) return;
-    console.log(oData)
 
     let eName = userDisplay.getElementsByTagName("span")[0];
     let eEmail = userDisplay.getElementsByTagName("span")[1];
@@ -378,15 +466,36 @@ function upUserDisplay(oData){
     if(oData.hasOwnProperty("login_email")) eEmail.innerText = oData["login_email"];
     if(oData.hasOwnProperty("user_name")) eName.innerText = oData["user_name"];
     if(oData.hasOwnProperty("role")) eTitle.innerText = oData["role"];
+    if(oData.hasOwnProperty("shielded") && oData["shielded"] === "yes"){
+        eShield.classList.remove("bi-shield-x");
+        eShield.classList.remove("my-login-tick-ng");
+        eShield.classList.add("bi-shield-check");
+        eShield.classList.add("my-login-tick-ok");
+    }
     if(oData.hasOwnProperty("modify_on")) eMoreInfo.innerText = new Date(Number(oData["modify_on"]) *1000);
 }
 
 function upd_user_info(){
-    my_ajax_get("src_modules/login/chk_and_rtn_login_user_info.php",[{}],function(rtnO){
+    // let sf = "src_modules/login/chk_and_rtn_login_user_info.php";
+    let sf = "src_modules/login/chk_and_rtn_login_user_info_sqlite.php";
+    my_ajax_get(sf,[{}],function(rtnO){
         upUserDisplay(rtnO["user_info"]);
+        // console.log(rtnO)
+        upd_login_logout_buttons();
     })
 };
 
+function upd_login_logout_buttons(){
+    if(userDisplay.getElementsByTagName("span")[1].innerText === "Somebody@nowhere.com"){
+        btn_logout.style.display = 'none';
+        btn_login_otp.style.display = 'block';
+        btn_login.style.display = 'block';
+    }else{
+        btn_logout.style.display = 'block';
+        btn_login_otp.style.display = 'none';
+        btn_login.style.display = 'none';
+    }
+}
 
 ///////////////////////////////////////////////////////////////////
 function update_history_data(){
@@ -824,38 +933,6 @@ function update_sum_info_to_tbody(tgtE,data){
         }
     }else{
         console.log("update table additionally -> disabled")
-        // // check and update the target prjN
-        // for(let prjN in data){
-        //     let tgtTr = undefined;
-        //     for(let tmpTr of aoTr){
-        //         if(tmpTr.getElementsByTagName("td").length > 0){
-        //             if(tmpTr.getElementsByTagName("td")[0].innerText === prjN){
-        //                 tgtTr = tmpTr;
-        //             }
-        //         }
-        //     }
-        //     if(tgtTr === undefined){
-        //         // add new
-        //         tgtE.appendChild(my_add_row([
-        //             prjN,
-        //             data[prjN]["emptyMAC"],
-        //             data[prjN]["MAC<31"],
-        //             data[prjN]["MAC=31-90"],
-        //             data[prjN]["MAC>90"],
-        //             data[prjN]["total"]
-        //         ],"td",{"padding":0,"border":"1px gray solid"}
-        //         ))
-        //         // console.log("add new", prjN)
-        //     }else{
-        //         // updating
-        //         tgtTr.getElementsByTagName("td")[1].innerText = Number(tgtTr.getElementsByTagName("td")[1].innerText) + Number(data[prjN]["emptyMAC"]);
-        //         tgtTr.getElementsByTagName("td")[2].innerText = Number(tgtTr.getElementsByTagName("td")[2].innerText) + Number(data[prjN]["MAC<31"]);
-        //         tgtTr.getElementsByTagName("td")[3].innerText = Number(tgtTr.getElementsByTagName("td")[3].innerText) + Number(data[prjN]["MAC=31-90"]);
-        //         tgtTr.getElementsByTagName("td")[4].innerText = Number(tgtTr.getElementsByTagName("td")[4].innerText) + Number(data[prjN]["MAC>90"]);
-        //         tgtTr.getElementsByTagName("td")[5].innerText = Number(tgtTr.getElementsByTagName("td")[5].innerText) + Number(data[prjN]["total"]);
-        //         // console.log("updating", prjN,tgtTr)
-        //     }
-        // }
     }
 }
 
@@ -948,1640 +1025,6 @@ function gen_pie_chart(tgtE,num_emptyMAC,num_MAC31,num_MAC90,num_MACover){
     // =>
     return aPieTop;
 }
-
-// ///////////////////////////////////////////////////////////////////
-// function dsp_login(){
-//     remove_effect();
-//     hide_left();
-//     while(leftSide.childNodes.length > 0){leftSide.lastChild.remove()}
-//     leftSide.appendChild(gen_login_form());
-//     show_left();
-// }
-
-// function dsp_add_item(){
-//     remove_effect();
-//     hide_left();
-//     while(leftSide.childNodes.length > 0){leftSide.lastChild.remove()}
-//     leftSide.appendChild(gen_add_item_form());
-//     show_left();
-// }
-
-// function dsp_add_person(){
-//     remove_effect();
-//     hide_left();
-//     while(leftSide.childNodes.length > 0){leftSide.lastChild.remove()}
-//     leftSide.appendChild(gen_add_person_form());
-//     show_left();
-// }
-
-// function dsp_user_action_on_item(clickedEle){
-//     remove_effect();
-//     hide_left();
-//     while(leftSide.childNodes.length > 0){leftSide.lastChild.remove()}
-//     leftSide.appendChild(gen_user_action_on_item(clickedEle));
-//     show_left();
-// }
-
-// function gen_add_item_form(){
-//     // => prepare time-tring for today 00:00
-//     let nowStr = new Date();
-//     // nowStr.setMinutes(nowStr.getMinutes() - nowStr.getTimezoneOffset());
-//     nowStr.setMinutes(nowStr.getTimezoneOffset()+1);
-//     // console.log(nowStr.toJSON().slice(0,16))
-//     // =>
-//     let eTop = my_create();
-//     eTop.appendChild(my_create("p","Adding a new item to list of elearning/ survey.",[],{},{}))
-//     eTop.appendChild(my_create("label","Subject:",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"item_subject","onchange":"update_item_info_in_adding_form(this.value,this.parentNode)"}))
-//     eTop.appendChild(my_create("label","Start date",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"item_start","type":"datetime-local","value":nowStr.toJSON().slice(0,16)}))
-//     eTop.appendChild(my_create("label","End date",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"item_end","type":"datetime-local"}))
-//     eTop.appendChild(my_create("label","Link",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"item_link"}))
-//     eTop.appendChild(my_create("label","More info",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("textarea",undefined,[],{"width":"100%","resize":"none"},{"name":"item_moreInfo","rows":9}))
-//     //
-//     eTop.appendChild(my_create("div","Import",["w3-button","w3-round","w3-indigo"],{"width":"100%"},{"onclick":"import_data_from_form(this.parentNode)"}));
-//     return eTop;
-// }
-
-// function gen_user_action_on_item(clickedEle){
-//     // console.log(clickedEle.parentNode.parentNode.getElementsByTagName("a")[0].innerText)
-//     // let subject = clickedEle.parentNode.parentNode.getElementsByTagName("a")[0].innerText;
-//     let reflink = clickedEle.parentNode.parentNode.getElementsByTagName("a")[0].href;
-//     let subject = clickedEle.parentNode.parentNode.getElementsByTagName("a")[0].nextElementSibling.innerText;
-//     let eTop = my_create();
-//     eTop.appendChild(my_create("p","User input finished date for an item.",[],{},{}))
-//     eTop.appendChild(my_create("label","Subject:",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"item_subject","readonly":true,"value":subject}))
-//     eTop.appendChild(my_create("label","CheckLink (careful)!",["w3-block","w3-button"],{},{"onclick":"toggle_nextEle(this)"}))
-//     eTop.appendChild(my_create("label",reflink,["w3-small","w3-block"],{"wordWrap":"break-word","display":"none"},{"name":"item_link","readonly":true}))
-//     eTop.appendChild(my_create("label","More info:",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("textarea",undefined,[],{"width":"100%","resize":"none"},{"name":"item_moreInfo","rows":9,"readonly":true}))
-//     eTop.appendChild(my_create("label","Your Finished date",["w3-large","w3-topbar"],{},{}))
-//     eTop.appendChild(my_create("div","now?",["w3-button","w3-black","w3-round","w3-right"],{},{"onclick":"get_nowstr_to_next_input(this)"}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"item_finish","type":"datetime-local"}))
-//     eTop.appendChild(my_create("div","Import",["w3-button","w3-round","w3-indigo"],{"width":"100%"},{"onclick":"import_user_action_on_item_form(this.parentNode)"}));
-//     // =>
-//     update_item_info_in_adding_form(subject,eTop)
-//     return eTop;
-// }
-// function get_nowstr_to_next_input(thisEle){
-//     let nowStr = new Date();
-//     nowStr.setMinutes(nowStr.getMinutes() - nowStr.getTimezoneOffset());
-//     // console.log(nowStr.toJSON().slice(0,16))
-//     thisEle.nextElementSibling.setAttribute("value",nowStr.toJSON().slice(0,16))
-//     return 0;
-// }
-
-// function import_login_or_OTP(tgtForm){
-//     if(tgtForm === undefined) return;
-//     // => retrieve the values from form inputs, text-area, select ...
-//     let objData = {};
-//     let btnAction = "";
-//     let btnOpacity = false;//control the enabling property
-//     for(let tmpE of tgtForm.getElementsByTagName("div")){
-//         if(tmpE.classList.contains("w3-button")){
-//             btnAction = tmpE.innerText;
-//             if(tmpE.classList.contains("w3-opacity")){
-//                 btnOpacity = true;
-//             }
-//         }
-//     }
-//     if(btnOpacity === true){
-//         dsp_notification("Email or OTP code not valid.","Error")
-//         return 0;//if the button is disable, then don't do anything
-//     }
-//     for(let tmpE of tgtForm.childNodes){
-//         if(tmpE.getAttribute("name") !== null){
-//             objData[tmpE.getAttribute("name")] = tmpE["value"]
-//         }
-//     }
-//     // console.log(objData)
-
-//     // => sending over internet
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             // =>
-//             let objData = [];
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             // =>
-//             // console.log(objData)
-//             if(!objData.hasOwnProperty("OTP")){
-//                 dsp_notification("Login FAILED","Error");
-//             }else{
-//                 if(objData["OTP"] === "OK"){
-//                     dsp_user_info_from_email(objData["login_email"]);
-//                     // => remove leftSide and update the content
-//                     setCookie("userEmail",objData["login_email"],180);
-//                     setCookie("userEmailOTP","OK",180);
-//                     while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//                     hide_left();
-//                     // =>
-//                     dsp_all_items("warn");
-//                 }else if(objData["OTP"] === "Sent"){
-//                     dsp_notification("OTP sent.")
-//                 }else if(objData["OTP"] === "NG"){
-//                     dsp_notification("OTP not matched.")
-//                     setCookie("userEmail","Somebody@nowhere.com",-1);
-//                     setCookie("userEmailOTP","NG",-1);
-//                 }else{
-//                     dsp_notification("Unknown OTP status: "+objData["OTP"])
-//                     setCookie("userEmail","Somebody@nowhere.com",-1);
-//                     setCookie("userEmailOTP","NG",-1);
-//                 }
-//             }
-//         }else{}
-//     }
-//     let oStr = "";
-//     for(let tmpv in objData){
-//         oStr += "&"+tmpv+"="+objData[tmpv];
-//     }
-//     oStr = oStr.replace(/^&/,"");
-//     xmlhttp.open("POST","login.php",true);
-//     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//     xmlhttp.send(oStr);
-//     return;
-// }
-
-// function import_data_from_form(tgtForm){
-//     if(tgtForm === undefined) return;
-//     // => retrieve the values from form inputs, text-area, select ...
-//     let objData = {};
-//     for(let tmpE of tgtForm.childNodes){
-//         if(tmpE.getAttribute("name") !== null){
-//             objData[tmpE.getAttribute("name")] = tmpE["value"]
-//         }
-//     }
-//     if(Object.keys(objData).length > 0) {
-//         objData["_type_"] = "item";
-//         objData["_user_"] = thisUser;
-//     }
-
-//     // => sending over internet
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             if(this.responseText === "OK"){
-//                 dsp_notification("Successfully registered the item: "+this.responseText,"Info")
-//                 // => remove leftSide and update the content
-//                 while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//                 hide_left();
-//                 // =>
-//                 dsp_all_items("warn");
-//             }else{
-//                 dsp_notification("Fail registering the item: "+this.responseText,"Error")
-//             }
-//             // clear/reset current info
-//             // for(let tmpE of tgtForm.childNodes){
-//             //     if(tmpE.getAttribute("name") !== null){
-//             //         tmpE.value = null;
-//             //     }
-//             // }
-//         }else{}
-//     }
-//     let oStr = "";
-//     for(let tmpv in objData){
-//         oStr += "&"+tmpv+"="+objData[tmpv];
-//     }
-//     oStr = oStr.replace(/^&/,"");
-//     xmlhttp.open("POST","register_item.php",true);
-//     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//     xmlhttp.send(oStr);
-//     return;
-// }
-
-// function import_user_action_on_item_form(tgtForm){
-//     if(tgtForm === undefined) return;
-//     // => retrieve the values from form inputs, text-area, select ...
-//     let objData = {};
-//     for(let tmpE of tgtForm.childNodes){
-//         if(tmpE.getAttribute("name") !== null){
-//             objData[tmpE.getAttribute("name")] = tmpE["value"]
-//         }
-//     }
-//     if(Object.keys(objData).length > 0) {
-//         objData["email"] = thisUser;
-//     }
-
-//     // => sending over internet
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             if(this.responseText === "OK"){
-//                 dsp_notification("Successfully registered the item: "+this.responseText,"Info")
-//                 // => remove leftSide and update the content
-//                 while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//                 hide_left();
-//                 // =>
-//                 dsp_all_items("warn");
-//             }else{
-//                 dsp_notification("Fail registering the item: "+this.responseText,"Error")
-//             }
-//         }else{}
-//     }
-//     let oStr = "";
-//     for(let tmpv in objData){
-//         oStr += "&"+tmpv+"="+encodeURIComponent(objData[tmpv]);
-//     }
-//     oStr = oStr.replace(/^&/,"");
-//     // console.log(oStr)
-//     xmlhttp.open("POST","register_user_action_on_item.php",true);
-//     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//     xmlhttp.send(oStr);
-//     return;
-// }
-
-// function gen_add_person_form(){
-//     // form for adding or modifying a person account
-//     let eTop = my_create();
-//     eTop.appendChild(my_create("p","Adding a person to list of cooperation.",[],{},{}))
-//     eTop.appendChild(my_create("label","Email:",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"person_email","type":"email","onchange":"update_user_info_in_adding_form(this.value,this.parentNode)"}))
-//     eTop.appendChild(my_create("label","Last-Middle-First Name",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"person_name"}))
-//     eTop.appendChild(my_create("label","Section",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"person_section"}))
-//     eTop.appendChild(my_create("label","Group",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"person_group"}))
-//     eTop.appendChild(my_create("label","More Info",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"person_moreInfo"}))
-//     //
-//     eTop.appendChild(my_create("div","Import",["w3-button","w3-round","w3-indigo"],{"width":"100%"},{"onclick":"import_user_info(this.parentNode)"}))     
-//     eTop.appendChild(my_create("div","Delete",["w3-button","w3-round","w3-indigo"],{"width":"100%"},{"onclick":"delete_user_info(this.parentNode)"}))     
-//     eTop.appendChild(my_create("div","Recover",["w3-button","w3-round","w3-indigo"],{"width":"100%"},{"onclick":"recover_user_info(this.parentNode)"}))
-//     // => find and update if there existed the user
-//     update_user_info_in_adding_form(thisUser,eTop);
-//     return eTop;
-// }
-
-// function import_user_info(tgtForm){
-//     if(tgtForm === undefined) return;
-//     // => retrieve the values from form inputs, text-area, select ...
-//     let objData = {};
-//     for(let tmpE of tgtForm.childNodes){
-//         if(tmpE.getAttribute("name") !== null){
-//             objData[tmpE.getAttribute("name")] = tmpE["value"]
-//         }
-//     }
-//     if(Object.keys(objData).length > 0) {
-//         objData["_user_"] = thisUser;
-//     }
-
-//     // => sending over internet
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             if(this.responseText === "OK"){
-//                 dsp_notification("Successfully registered the user: "+this.responseText,"Info")
-//                 // // => remove leftSide and update the content
-//                 // while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//                 // hide_left();
-//                 // // =>
-//                 // dsp_all_items("warn");
-//                 if(objData["person_email"] === thisUser){
-//                     dsp_user_info_from_email(thisUser);
-//                 }
-//                 update_user_info_in_adding_form(objData["person_email"],leftSide.getElementsByTagName("div")[0]);
-//             }else{
-//                 dsp_notification("Fail registering the user: "+this.responseText,"Error")
-//             }
-//         }else{}
-//     }
-//     let oStr = "";
-//     for(let tmpv in objData){
-//         oStr += "&"+tmpv+"="+objData[tmpv];
-//     }
-//     oStr = oStr.replace(/^&/,"");
-//     // console.log(oStr)
-//     xmlhttp.open("POST","register_user_info.php",true);
-//     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//     xmlhttp.send(oStr);
-//     return;
-// }
-
-// function delete_user_info(tgtForm){
-//     if(tgtForm === undefined) return;
-//     // => retrieve the values from form inputs, text-area, select ...
-//     let objData = {};
-//     for(let tmpE of tgtForm.childNodes){
-//         if(tmpE.getAttribute("name") !== null){
-//             objData[tmpE.getAttribute("name")] = tmpE["value"]
-//         }
-//     }
-//     if(Object.keys(objData).length > 0) {
-//         if(objData["person_email"] === thisUser){
-//             dsp_notification("You cannot delete yourself.","Error");
-//             return 0;
-//         }
-//         objData["_user_"] = thisUser;
-//         objData["_delete_"] = "yes";
-//     }
-
-//     // => sending over internet
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             if(this.responseText === "OK"){
-//                 dsp_notification("Successfully deleted the user: "+this.responseText,"Info")
-//                 // => remove leftSide and update the content
-//                 while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//                 hide_left();
-//                 // // =>
-//                 // dsp_all_items("warn");
-//             }else{
-//                 dsp_notification("Fail deleting the user: "+this.responseText,"Error")
-//             }
-//         }else{}
-//     }
-//     let oStr = "";
-//     for(let tmpv in objData){
-//         oStr += "&"+tmpv+"="+objData[tmpv];
-//     }
-//     oStr = oStr.replace(/^&/,"");
-//     // console.log(oStr)
-//     xmlhttp.open("POST","register_user_info.php",true);
-//     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//     xmlhttp.send(oStr);
-//     return;
-// }
-
-// function recover_user_info(tgtForm){
-//     if(tgtForm === undefined) return;
-//     // => retrieve the values from form inputs, text-area, select ...
-//     let objData = {};
-//     for(let tmpE of tgtForm.childNodes){
-//         if(tmpE.getAttribute("name") !== null){
-//             objData[tmpE.getAttribute("name")] = tmpE["value"]
-//         }
-//     }
-//     if(Object.keys(objData).length > 0) {
-//         if(objData["person_email"] === thisUser){
-//             dsp_notification("You cannot recover yourself.","Error");
-//             return 0;
-//         }
-//         objData["_user_"] = thisUser;
-//         objData["_recover_"] = "yes";
-//     }
-
-//     // => sending over internet
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             if(this.responseText === "OK"){
-//                 dsp_notification("Successfully recovered the user: "+this.responseText,"Info")
-//                 // // => remove leftSide and update the content
-//                 // while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//                 // hide_left();
-//                 // // =>
-//                 // dsp_all_items("warn");
-//                 update_user_info_in_adding_form(objData["person_email"],leftSide.getElementsByTagName("div")[0]);
-//             }else{
-//                 dsp_notification("Fail recovering the user: "+this.responseText,"Error")
-//             }
-//         }else{}
-//     }
-//     let oStr = "";
-//     for(let tmpv in objData){
-//         oStr += "&"+tmpv+"="+objData[tmpv];
-//     }
-//     oStr = oStr.replace(/^&/,"");
-//     // console.log(oStr)
-//     xmlhttp.open("POST","register_user_info.php",true);
-//     xmlhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-//     xmlhttp.send(oStr);
-//     return;
-// }
-
-// function gen_login_form(){
-//     // form for login/changing login information
-//     let eTop = my_create();
-//     eTop.appendChild(my_create("p","Changing Login information.",[],{},{}))
-//     eTop.appendChild(my_create("label","Email:",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"login_email","type":"email","onkeyup":"check_email_input(this)"}))
-//     eTop.appendChild(my_create("label","OTPcode",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"name":"login_OTP","onkeyup":"check_OTP_input(this)"}))
-//     //
-//     eTop.appendChild(my_create("div","getOTP",["w3-button","w3-round","w3-indigo","w3-opacity"],{"width":"100%"},{"onclick":"import_login_or_OTP(this.parentNode)"}))
-//     return eTop;
-// }
-
-// function gen_list_NY_members_for_item(objData){
-//     // console.log("gen_list_NY_members_for_item")
-//     let eTop = my_create("div",undefined,["w3-responsive"],{"height":"100vh"});
-//     eTop.appendChild(my_create("p","List of Not-Finished-Yet persons.",[],{},{}))
-//     eTop.appendChild(my_create("label","Subject",["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"readonly":true,"value":objData["subject"]}))
-//     eTop.appendChild(my_create("label",objData["type"],["w3-large"],{},{}))
-//     eTop.appendChild(my_create("input",undefined,["w3-input"],{},{"readonly":true,"value":objData["name"]}))
-//     eTop.appendChild(my_create("label","List of NY:",["w3-large"],{},{}))
-//     for(let email in objData["data"]){
-//         let eDiv = my_create("div",undefined,["w3-container","w3-border-top"],{"paddingLeft":0});
-//         let eName = my_create("div",objData["data"][email]["person_name"],[],{},{});
-//         let eMoreInfo = my_create("div",objData["data"][email]["person_moreInfo"],["w3-small","w3-text-pink"],{"width":"100%","textAlign":"left"},{});
-//         let eEmail = my_create("div",email,["w3-small","w3-text-purple"],{"width":"100%","textAlign":"right"},{});
-//         eDiv.appendChild(eName);
-//         eDiv.appendChild(eMoreInfo);
-//         eDiv.appendChild(eEmail);
-//         eTop.appendChild(eDiv);
-//     }
-//     //
-//     return eTop;
-// }
-
-// function gen_sum_items_tbl(itemRef,sumSect,sumGroup){
-//     // console.log("dbg:: gen_sum_items_tbl");
-//     // => working on data
-//     let iSubject = "an item subject";
-//     let iRefLink = "an item subject";
-//     let iStaDate = new Date(Date.now() - 2*24*3600*1000);
-//     let iEndDate = new Date(Date.now() + 24*3600*1000);
-//     let iFinDate = null;
-//     let iFinLastModBy = "-";
-//     let iFinLastModOn = "-";
-//     let iLastUpdBy = undefined;
-//     let iLastUpdOn = undefined;
-//     // for some testing contextes
-//     if(itemRef !== undefined){
-//         iSubject = itemRef["item_subject"]; //"an item subject";
-//         iRefLink = itemRef["item_link"]; //"an item subject";
-//         iStaDate = new Date(itemRef["item_start"]); //new Date(Date.now() - 2*24*3600*1000);
-//         iEndDate = new Date(itemRef["item_end"]); //new Date(Date.now() + 24*3600*1000);
-//         iLastUpdBy = "-";if(itemRef.hasOwnProperty("_user_")) iLastUpdBy = itemRef["_user_"];
-//         iLastUpdOn = "-";if(itemRef.hasOwnProperty("_modTime_")) iLastUpdOn = itemRef["_modTime_"];
-//     }
-//     let total_days =Number((iEndDate-iStaDate)/(1000*3600*24)).toFixed(1);
-//     let now_diff_days = Number((Date.now()-iStaDate)/(1000*3600*24)).toFixed(1);
-//     let now_diff_percent = Number(100*(Date.now()-iStaDate)/(iEndDate-iStaDate)).toFixed(1);
-//     let now_diff_days_dsp = now_diff_days; if(now_diff_days - total_days > 0) now_diff_days_dsp = "Over " + Number(now_diff_days - total_days).toFixed(1);
-//     let now_diff_percent_dsp = now_diff_percent;if(now_diff_percent - 100 > 0) now_diff_percent_dsp = "-";
-
-//     let oBySects = {};
-//     for(let sect in itemRef["sumBySect"]){
-//         if(!oBySects.hasOwnProperty(sect)) oBySects[sect] = {};
-//         oBySects[sect]["done"] = itemRef["sumBySect"][sect];
-//         oBySects[sect]["all"] = sumSect[sect];
-//     }
-//     for(let sect in sumSect){
-//         if(!oBySects.hasOwnProperty(sect)){
-//             oBySects[sect] = {};
-//             oBySects[sect]["done"] = 0;
-//             oBySects[sect]["all"] = sumSect[sect];
-//         }
-//     }
-
-//     let oByGroups = {};
-//     for(let group in itemRef["sumByGroup"]){
-//         if(!oByGroups.hasOwnProperty(group)) oByGroups[group] = {};
-//         oByGroups[group]["done"] = itemRef["sumByGroup"][group];
-//         oByGroups[group]["all"] = sumGroup[group];
-//     }
-//     for(let group in sumGroup){
-//         if(!oByGroups.hasOwnProperty(group)){
-//             oByGroups[group] = {};
-//             oByGroups[group]["done"] = 0;
-//             oByGroups[group]["all"] = sumGroup[group];
-//         }
-//     }
-//     // console.log(oBySects,oByGroups);
- 
-//     // => working on generating element
-//     // let eTop = my_create(undefined,undefined,["my-an-item","w3-padding-small","w3-animate-zoom","w3-col","l4","m6","s12"]);
-//     let eTop = my_create(undefined,undefined,["my-an-item","w3-padding-small","w3-animate-zoom","my-div-for-sum-table"]);
-//     let eTop2 = my_create(undefined,undefined,["w3-light-gray","w3-card-4","w3-round","w3-center"])
-//     eTop.appendChild(eTop2)
-//     // eTop2.appendChild(my_create("a",iSubject,["w3-block","w3-bottombar","w3-large","my-center"],{"width":"100%","minHeight":"72px"},{"href":iRefLink,"target":"_blank_"}))
-//     let eTitle = my_create("div",undefined,["w3-bottombar"],{"position":"relative"});
-//     eTitle.appendChild(my_create("a","ref: clickme.",["w3-block"],{"padding":0,"paddingTop":"4px","paddingLeft":"8px","text-align":"left"},{"href":iRefLink,"target":"_blank_"}))
-//     eTitle.appendChild(my_create("div",iSubject,["w3-large","my-center"],{"width":"100%","minHeight":"72px"},{}))
-//     eTitle.appendChild(my_create("div","<img src=''/>",["my-title-icon"],{},{}))
-//     eTitle.appendChild(my_create("div","Start:" + my_datetime(iStaDate),["w3-small","my-title-start"],{"font-family":"monospace"}))
-//     eTitle.appendChild(my_create("div","End  :" + my_datetime(iEndDate),["w3-small","my-title-end"],{"font-family":"monospace"}))
-//     if(now_diff_days - total_days <= 0){
-//         eTitle.getElementsByTagName("img")[0].src = ongoIcon;
-//         eTitle.style.backgroundColor = "#191970";//MidnightBlue
-//         eTitle.style.color = "white";
-//     }else{
-//         eTitle.getElementsByTagName("img")[0].src = pastIcon;
-//     }
-
-//     let eChild1 = my_create("div");//
-//     eChild1.appendChild(my_create("div","ModBy:" + iLastUpdBy,["w3-small"],{"font-family":"monospace"}))
-//     eChild1.appendChild(my_create("div","ModOn:" + my_datetime_fr_epoch(iLastUpdOn),["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","Start:" + my_datetime(iStaDate),["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","End  :" + my_datetime(iEndDate),["w3-small"],{"font-family":"monospace"}))
-//     let eChild2 = my_create("div",undefined,["w3-container"]);//
-//     eChild2.appendChild(my_create("div",total_days+" day(s)"        ,["my-center"],{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     eChild2.appendChild(my_create("div",now_diff_days_dsp+" day(s)" ,["my-center"],{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     eChild2.appendChild(my_create("div",now_diff_percent_dsp + " %" ,["my-center"],{"width":"33.33%","minHeight":"44px","float":"left"}))
-
-//     let tblSect = my_create("table",undefined,["w3-table-all","w3-centered","w3-hoverable","w3-bordered","w3-animate-zoom"],{"width":"100%","fontSize":"8px"});
-//     let tblSectTbd = my_create("tbody"); tblSect.appendChild(tblSectTbd);
-//     let aoHeadSect = Object.keys(oBySects).sort();
-//     let aoDoneSect = [];
-//     let aoAllSect = [];
-//     let aoPercSect = [];
-//     for(let sect of aoHeadSect){
-//         aoDoneSect.push(oBySects[sect]["done"]);
-//         aoAllSect.push(oBySects[sect]["all"]);
-//         let dspPerc = Number(100*Number(oBySects[sect]["done"])/Number(oBySects[sect]["all"])).toFixed(0);
-//         // if(dspPerc === "100.0") dspPerc = "100";
-//         if(dspPerc - 100 < 0) dspPerc = "0"+dspPerc;
-//         aoPercSect.push(dspPerc);
-//     }
-//     tblSectTbd.appendChild(my_add_row(aoHeadSect,"th",{"padding":0,"border":"1px gray solid","font-family":"monospace"}));
-//     tblSectTbd.appendChild(my_add_row(aoDoneSect,"td",{"padding":0,"border":"1px gray solid"}));
-//     tblSectTbd.appendChild(my_add_row(aoAllSect,"td",{"padding":0,"border":"1px gray solid"}));
-//     tblSectTbd.appendChild(my_add_row(aoPercSect,"td",{"padding":0,"border":"1px gray solid"}));
-
-//     let tblGroup = my_create("table",undefined,["w3-table-all","w3-centered","w3-bordered","w3-hoverable","w3-animate-zoom","w3-margin-top"],{"width":"100%","fontSize":"8px"});
-//     let tblGroupTbd = my_create("tbody");tblGroup.appendChild(tblGroupTbd);
-//     let aoHeadGroup = Object.keys(oByGroups).sort();
-//     let aoHeadGroupDsp = [];
-//     let aoDoneGroup = [];
-//     let aoAllGroup = [];
-//     let aoPercGroup = [];
-//     for(let group of aoHeadGroup){
-//         let grpDsp = group.replace("Backend Design","BED");
-//         grpDsp = grpDsp.replace("MiddleEnd Design","MED");
-//         aoHeadGroupDsp.push(grpDsp);
-//         aoDoneGroup.push(oByGroups[group]["done"]);
-//         aoAllGroup.push(oByGroups[group]["all"]);
-//         let dspPerc = Number(100*Number(oByGroups[group]["done"])/Number(oByGroups[group]["all"])).toFixed(0);
-//         // if(dspPerc === "100.0") dspPerc = "100";
-//         if(dspPerc - 100 < 0) dspPerc = "0"+dspPerc;
-//         aoPercGroup.push(dspPerc);
-//     }
-//     tblGroupTbd.appendChild(my_add_row(aoHeadGroupDsp,"th",{"padding":0,"border":"1px gray solid","font-family":"monospace"}));
-//     tblGroupTbd.appendChild(my_add_row(aoDoneGroup,"td",{"padding":0,"border":"1px gray solid"}));
-//     tblGroupTbd.appendChild(my_add_row(aoAllGroup,"td",{"padding":0,"border":"1px gray solid"}));
-//     tblGroupTbd.appendChild(my_add_row(aoPercGroup,"td",{"padding":0,"border":"1px gray solid"}));
-
-//     // => modify the color for the 100% finished (to easily ignore)
-//     let lastRow = tblSectTbd.getElementsByTagName("tr")[tblSectTbd.getElementsByTagName("tr").length-1];
-//     for(let i=0;i<tblSectTbd.getElementsByTagName("th").length;i++){
-//         if(Number(lastRow.getElementsByTagName("td")[i].innerText).toFixed(1) - 100 === 0){
-//             for(let tmpR of tblSectTbd.getElementsByTagName("tr")){
-//                 if(tmpR.getElementsByTagName("th").length !== 0){
-//                     tmpR.getElementsByTagName("th")[i].style.color = "#ccc";
-//                 }else{
-//                     tmpR.getElementsByTagName("td")[i].style.color = "#ccc";
-//                 }
-//             }
-//         }else{
-//             // add behavior for clicking on header
-//             let th = tblSectTbd.getElementsByTagName("th")[i];
-//             th.classList.add("w3-hover-indigo")
-//             th.setAttribute("onclick","dsp_ny_members_for_item('"+iSubject+"','section','"+aoHeadSect[i]+"')")
-//         }
-//     }
-
-//     lastRow = tblGroupTbd.getElementsByTagName("tr")[tblGroupTbd.getElementsByTagName("tr").length-1];
-//     for(let i=0;i<tblGroupTbd.getElementsByTagName("th").length;i++){
-//         if(Number(lastRow.getElementsByTagName("td")[i].innerText).toFixed(1) - 100 === 0){
-//             for(let tmpR of tblGroupTbd.getElementsByTagName("tr")){
-//                 if(tmpR.getElementsByTagName("th").length !== 0){
-//                     tmpR.getElementsByTagName("th")[i].style.color = "#ccc";
-//                 }else{
-//                     tmpR.getElementsByTagName("td")[i].style.color = "#ccc";
-//                 }
-//             }
-//         }else{
-//             // add behavior for clicking on header
-//             let th = tblGroupTbd.getElementsByTagName("th")[i];
-//             th.classList.add("w3-hover-indigo")
-//             th.setAttribute("onclick","dsp_ny_members_for_item('"+iSubject+"','group','"+aoHeadGroup[i]+"')")
-//         }
-//     }
-    
-//     eTop2.appendChild(eTitle);
-//     eTop2.appendChild(eChild1);
-//     eTop2.appendChild(eChild2);
-//     eTop2.appendChild(tblSect);
-//     eTop2.appendChild(tblGroup);
-//     return eTop;
-// }
-
-// function gen_sum_items_graph(itemRef,sumSect,sumGroup,userInfo){
-//     // console.log("dbg:: gen_sum_items_tbl");
-//     // => working on data
-//     let iSubject = "an item subject";
-//     let iRefLink = "an item subject";
-//     let iStaDate = new Date(Date.now() - 2*24*3600*1000);
-//     let iEndDate = new Date(Date.now() + 24*3600*1000);
-//     let iLastUpdBy = undefined;
-//     let iLastUpdOn = undefined;
-//     // for some testing contextes
-//     if(itemRef !== undefined){
-//         iSubject = itemRef["item_subject"]; //"an item subject";
-//         iRefLink = itemRef["item_link"]; //"an item subject";
-//         iStaDate = new Date(itemRef["item_start"]); //new Date(Date.now() - 2*24*3600*1000);
-//         iEndDate = new Date(itemRef["item_end"]); //new Date(Date.now() + 24*3600*1000);
-//         iLastUpdBy = "-";if(itemRef.hasOwnProperty("_user_")) iLastUpdBy = itemRef["_user_"];
-//         iLastUpdOn = "-";if(itemRef.hasOwnProperty("_modTime_")) iLastUpdOn = itemRef["_modTime_"];
-//     }
-//     let total_days =Number((iEndDate-iStaDate)/(1000*3600*24)).toFixed(1);
-//     let now_diff_days = Number((Date.now()-iStaDate)/(1000*3600*24)).toFixed(1);
-//     let now_diff_percent = Number(100*(Date.now()-iStaDate)/(iEndDate-iStaDate)).toFixed(1);
-//     let now_diff_days_dsp = now_diff_days; if(now_diff_days - total_days > 0) now_diff_days_dsp = "Over " + Number(now_diff_days - total_days).toFixed(1);
-//     let now_diff_percent_dsp = now_diff_percent;if(now_diff_percent - 100 > 0) now_diff_percent_dsp = "-";
-
-//     if(now_diff_days - total_days > 0) {return null};//don't need to display the past
-
-//     let oBySects = {};
-//     for(let sect in itemRef["sumBySect"]){
-//         // =>
-//         if(!oBySects.hasOwnProperty("All")){
-//             oBySects["All"] = {};
-//             oBySects["All"]["done"] = 0;
-//             oBySects["All"]["all"] = 0;
-//         }
-//         oBySects["All"]["done"] += itemRef["sumBySect"][sect];
-//         oBySects["All"]["all"] += sumSect[sect];
-//         // =>
-//         if(!oBySects.hasOwnProperty(sect)) oBySects[sect] = {};
-//         oBySects[sect]["done"] = itemRef["sumBySect"][sect];
-//         oBySects[sect]["all"] = sumSect[sect];
-//     }
-//     for(let sect in sumSect){
-//         if(!oBySects.hasOwnProperty(sect)){
-//             // =>
-//             if(!oBySects.hasOwnProperty("All")){
-//                 oBySects["All"] = {};
-//                 oBySects["All"]["done"] = 0;
-//                 oBySects["All"]["all"] = 0;
-//             }
-//             oBySects["All"]["all"] += sumSect[sect];
-//             // =>
-//             oBySects[sect] = {};
-//             oBySects[sect]["done"] = 0;
-//             oBySects[sect]["all"] = sumSect[sect];
-//         }
-//     }
-
-//     let oByGroups = {};
-//     for(let group in itemRef["sumByGroup"]){
-//         if(!oByGroups.hasOwnProperty(group)) oByGroups[group] = {};
-//         oByGroups[group]["done"] = itemRef["sumByGroup"][group];
-//         oByGroups[group]["all"] = sumGroup[group];
-//     }
-//     for(let group in sumGroup){
-//         if(!oByGroups.hasOwnProperty(group)){
-//             oByGroups[group] = {};
-//             oByGroups[group]["done"] = 0;
-//             oByGroups[group]["all"] = sumGroup[group];
-//         }
-//     }
-//     // console.log(oBySects,oByGroups,userInfo);
- 
-//     // // => working on generating element
-//     let eTop = my_create(undefined,undefined,["my-an-item","w3-padding-small","w3-animate-zoom","my-div-for-sum-table"]);
-//     let eTop2 = my_create(undefined,undefined,["w3-light-gray","w3-card-4","w3-round","w3-center"])
-//     eTop.appendChild(eTop2)
-//     // eTop2.appendChild(my_create("a",iSubject,["w3-block","w3-bottombar","w3-large","my-center"],{"width":"100%","minHeight":"72px"},{"href":iRefLink,"target":"_blank_"}))
-//     let eTitle = my_create("div",undefined,["w3-bottombar"],{"position":"relative"});
-//     eTitle.appendChild(my_create("a","ref: clickme.",["w3-block"],{"padding":0,"paddingTop":"4px","paddingLeft":"8px","text-align":"left"},{"href":iRefLink,"target":"_blank_"}))
-//     eTitle.appendChild(my_create("div",iSubject,["w3-large","my-center"],{"width":"100%","minHeight":"72px"},{}))
-//     eTitle.appendChild(my_create("div","<img src=''/>",["my-title-icon"],{},{}))
-//     eTitle.appendChild(my_create("div","Start:" + my_datetime(iStaDate),["w3-small","my-title-start"],{"font-family":"monospace"}))
-//     eTitle.appendChild(my_create("div","End  :" + my_datetime(iEndDate),["w3-small","my-title-end"],{"font-family":"monospace"}))
-//     if(now_diff_days - total_days <= 0){
-//         eTitle.getElementsByTagName("img")[0].src = ongoIcon;
-//         eTitle.style.backgroundColor = "#191970";//MidnightBlue
-//         eTitle.style.color = "white";
-//     }else{
-//         eTitle.getElementsByTagName("img")[0].src = pastIcon;
-//     }
-
-//     let eChild1 = my_create("div");//
-//     eChild1.appendChild(my_create("div","ModBy:" + iLastUpdBy,["w3-small"],{"font-family":"monospace"}))
-//     eChild1.appendChild(my_create("div","ModOn:" + my_datetime_fr_epoch(iLastUpdOn),["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","Start:" + my_datetime(iStaDate),["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","End  :" + my_datetime(iEndDate),["w3-small"],{"font-family":"monospace"}))
-//     let eChild2 = my_create("div",undefined,["w3-container"]);//
-//     eChild2.appendChild(my_create("div",total_days+" day(s)"        ,["my-center"],{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     eChild2.appendChild(my_create("div",now_diff_days_dsp+" day(s)" ,["my-center"],{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     eChild2.appendChild(my_create("div",now_diff_percent_dsp + " %" ,["my-center"],{"width":"33.33%","minHeight":"44px","float":"left"}))
-   
-//     eTop2.appendChild(eTitle);
-//     eTop2.appendChild(eChild1);
-//     eTop2.appendChild(eChild2);
-//     // =>
-//     if(userInfo[thisUser]["person_section"].hasOwnProperty("all")){
-//         eTop2.appendChild(gen_pie_chart("33.33%","All",oBySects["All"]["all"],oBySects["All"]["done"]));
-//         eTop2.appendChild(gen_pie_chart("33.33%",userInfo[thisUser]["person_section"],oBySects[userInfo[thisUser]["person_section"]]["all"],oBySects[userInfo[thisUser]["person_section"]]["done"],iSubject,"section"));
-//         eTop2.appendChild(gen_pie_chart("33.33%",userInfo[thisUser]["person_group"],oByGroups[userInfo[thisUser]["person_group"]]["all"],oByGroups[userInfo[thisUser]["person_group"]]["done"],iSubject,"group"));
-//     }
-//     // =>
-//     for(let sectN in oBySects){
-//         if(sectN === "All") continue;
-//         // if(sectN === userInfo[thisUser]["person_section"]) continue;
-//         eTop2.appendChild(gen_pie_chart(
-//             "25%",
-//             sectN,
-//             oBySects[sectN]["all"],
-//             oBySects[sectN]["done"],
-//             iSubject,"section"));
-//     }
-//     return eTop;
-// }
-
-// function gen_pie_chart(percent,title,numTotal,numDone,subject,sectOrGrp){
-//     let aPieTop = my_create("div",undefined,["w3-white","w3-topbar","w3-border"],{"width":percent,"float":"left"});
-//     let titleDsp = title;
-//     titleDsp = titleDsp.replace(/Backend Design Division/,"BEDD");
-//     titleDsp = titleDsp.replace(/Backend Design/,"BED");
-//     titleDsp = titleDsp.replace(/MiddleEnd Design/,"MED");
-//     let eTitle = my_create("p",titleDsp,[],{"padding":0});
-//     if(title !== "All"){
-//         eTitle.classList.add("w3-button");
-//         eTitle.setAttribute("onclick","dsp_ny_members_for_item('"+subject+"','"+sectOrGrp+"','"+title   +"')")
-//     }else{
-//         eTitle.classList.add("w3-container");
-//     }
-//     let eInfo = my_create("div",undefined,[],{"padding":0,"margin":0})
-//     let eInfo1 = my_create("span","All:"+numTotal,["w3-half","w3-small"])
-//     let eInfo2 = my_create("span","NY:"+Number(numTotal-numDone),["w3-half","w3-small"],{"backgroundColor":"rgb(255, 99, 132)"})
-//     eInfo.appendChild(eInfo1);
-//     eInfo.appendChild(eInfo2);
-//     let eCanvas = my_create("canvas");
-//     const chartData = {
-//         labels: [
-//             'NotYet',
-//             'Done'
-//           ],
-//           datasets: [{
-//             label: 'My First Dataset',
-//             data: [Number(numTotal-numDone).toFixed(0), numDone],
-//             backgroundColor: [
-//               'rgb(255, 99, 132)',
-//               'rgb(54, 162, 235)',
-//             ],
-//             hoverOffset: 4
-//           }]
-//     };
-//     let chartConfig = {
-//         type:'pie',
-//         data: chartData,
-//         options: {
-//             plugins : {
-//                 legend : {
-//                     display : false,
-//                 },
-//                 tooltip: {
-//                     enabled : true
-//                 }
-//             }
-//         }
-//     };
-//     let theChart = new Chart(eCanvas,chartConfig);
-//     // =>
-//     aPieTop.appendChild(eTitle);
-//     aPieTop.appendChild(eInfo);
-//     aPieTop.appendChild(eCanvas);
-//     return aPieTop;
-// }
-
-// function gen_item_w_person(itemRef,personActionRef,mode){
-//     // console.log("dbg:: gen_item_w_person");
-//     if(mode === undefined) mode = "future_only";
-//     // => working on data
-//     let iSubject = "an item subject";
-//     let iRefLink = "an item subject";
-//     let iStaDate = new Date(Date.now() - 2*24*3600*1000);
-//     let iEndDate = new Date(Date.now() + 24*3600*1000);
-//     let iFinDate = null;
-//     let iFinLastModBy = "-";
-//     let iFinLastModOn = "-";
-//     let iLastUpdBy = undefined;
-//     let iLastUpdOn = undefined;
-//     let stt = "NotYet";//NY, Done
-//     // for some testing contextes
-//     if(itemRef !== undefined){
-//         iSubject = itemRef["item_subject"]; //"an item subject";
-//         iRefLink = itemRef["item_link"]; //"an item subject";
-//         iStaDate = new Date(itemRef["item_start"]); //new Date(Date.now() - 2*24*3600*1000);
-//         iEndDate = new Date(itemRef["item_end"]); //new Date(Date.now() + 24*3600*1000);
-//         iLastUpdBy = "-";if(itemRef.hasOwnProperty("_user_")) iLastUpdBy = itemRef["_user_"];
-//         iLastUpdOn = "-";if(itemRef.hasOwnProperty("_modTime_")) iLastUpdOn = itemRef["_modTime_"];
-//     }
-//     if(iSubject === undefined) return null;//something wrong with the data, ignore to generate the element
-//     if(personActionRef !== undefined){
-//         for(let chkSubject in personActionRef){
-//             if(chkSubject.replace(/[\s'"]/g,"") === iSubject.replace(/[\s'"]/g,"")){
-//                 iFinDate = new Date(personActionRef[chkSubject]["fin_date"]);
-//                 let dateOffset = "";
-//                 if(personActionRef[chkSubject].hasOwnProperty("lastUpdBy")) iFinLastModBy = personActionRef[chkSubject]["lastUpdBy"];
-//                 if(personActionRef[chkSubject].hasOwnProperty("lastUpdOn")) iFinLastModOn = personActionRef[chkSubject]["lastUpdOn"];
-//                 if(personActionRef[chkSubject].hasOwnProperty("timeOffset"))   dateOffset = personActionRef[chkSubject]["timeOffset"];
-//                 // console.log(chkSubject+ " vs "+iSubject, "matched", personActionRef[chkSubject],iFinDate)
-//             }
-//         }
-//     }
-//     let total_days =Number((iEndDate-iStaDate)/(1000*3600*24)).toFixed(1);
-//     let now_diff_days = Number((Date.now()-iStaDate)/(1000*3600*24)).toFixed(1);
-//     let now_diff_percent = Number(100*(Date.now()-iStaDate)/(iEndDate-iStaDate)).toFixed(1);
-//     let now_diff_days_dsp = "Past " + now_diff_days; if(now_diff_days - total_days > 0) now_diff_days_dsp = "Over " + Number(now_diff_days - total_days).toFixed(1);
-//     let now_diff_percent_dsp = now_diff_percent;if(now_diff_percent - 100 > 0) now_diff_percent_dsp = "-";
-//     let now_score = 0;
-//     if(now_diff_percent <=30){
-//         now_score = 3;
-//     }else if(now_diff_percent <=60){
-//         now_score = 2;
-//     }else if(now_diff_percent <=100){
-//         now_score = 1;
-//     }else if(now_diff_percent > 100){
-//         now_score = -1;
-//     }else{}
-//     if(iFinDate - iStaDate >= 0 && iEndDate - iFinDate >= 0){
-//         stt = "Done";
-//     }else if(iFinDate - iEndDate > 0) {
-//         stt = "DoneLate";
-//     }else{}
-//     if(stt === "Done"){
-//         // get score from the history
-//         now_score = "0";
-//         if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=30){
-//             now_score = 3;
-//         }else if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=60){
-//             now_score = 2;
-//         }else if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=100){
-//             now_score = 1;
-//         }else{}
-//     }else if(stt === "DoneLate"){
-//         now_score = 0.5;
-//     }else{
-//         // stt === NotYet
-//         if(Date.now() - iEndDate <= 0) {
-//             // now_score = 0; //only turn to 0 when calculating the real number
-//         }else{}
-//     }
-//     // => scoring
-//     if(stt === "Done" || now_diff_days - total_days > 0) theScore.innerText = Number(theScore.innerText)+now_score;
-//     // console.log("stt="+stt+" now_score="+now_score+" score="+theScore.innerText)
-
-//     if(stt === "NotYet") theWarn.innerText = Number(theWarn.innerText)+1
-    
-//     // scoping the displaying of items
-//     if(mode === "future_only"){
-//         if(now_diff_days - total_days > 0) return null;
-//     }else if(mode === "warn"){
-//         if(stt !== "NotYet") return null;
-//     }else{}
-
-//     // => working on generating element
-//     let eTop = my_create(undefined,undefined,["w3-padding-small","w3-animate-zoom","w3-col","l3","m4","s6"]);
-//     let eTop2 = my_create(undefined,undefined,["w3-light-gray","w3-card-4","w3-round","w3-center","w3-rightbar","w3-topbar"])
-//     eTop.appendChild(eTop2)
-//     // eTop2.appendChild(my_create("a",iSubject,["w3-block","w3-bottombar","w3-large","my-center"],{"width":"100%","minHeight":"72px"},{"href":iRefLink,"target":"_blank_"}))
-//     let eTitle = my_create("div",undefined,["w3-bottombar"],{"position":"relative"});
-//     eTitle.appendChild(my_create("a","ref: clickme.",["w3-block"],{"padding":0,"paddingTop":"4px","paddingLeft":"8px","text-align":"left"},{"href":iRefLink,"target":"_blank_"}))
-//     eTitle.appendChild(my_create("div",iSubject,["w3-large","my-center"],{"width":"100%","minHeight":"72px"},{}))
-//     eTitle.appendChild(my_create("div","<img src=''/>",["my-title-icon"],{},{}))
-//     eTitle.appendChild(my_create("div","Start:" + my_datetime(iStaDate),["w3-small","my-title-start"],{"font-family":"monospace"}))
-//     eTitle.appendChild(my_create("div","End  :" + my_datetime(iEndDate),["w3-small","my-title-end"],{"font-family":"monospace"}))
-//     if(now_diff_days - total_days <= 0){
-//         eTitle.getElementsByTagName("img")[0].src = ongoIcon;
-//         eTitle.style.backgroundColor = "#191970";//MidnightBlue
-//         eTitle.style.color = "white";
-//     }else{
-//         eTitle.getElementsByTagName("img")[0].src = pastIcon;
-//     }
-//     // let eChild1 = my_create("div");//
-//     // eChild1.appendChild(my_create("div","ModBy:" + iLastUpdBy,["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","ModOn:" + my_datetime_fr_epoch(iLastUpdOn),["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","Start:" + my_datetime(iStaDate),["w3-small"],{"font-family":"monospace"}))
-//     // eChild1.appendChild(my_create("div","End  :" + my_datetime(iEndDate),["w3-small"],{"font-family":"monospace"}))
-//     let eChild2 = my_create("div",undefined,["w3-container"]);//
-//     eChild2.appendChild(my_create("div",total_days+" day(s)"        ,["my-center"] ,{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     eChild2.appendChild(my_create("div",now_diff_days_dsp+" day(s)" ,["my-center"] ,{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     eChild2.appendChild(my_create("div",now_diff_percent_dsp + " %" ,["my-center"] ,{"width":"33.33%","minHeight":"44px","float":"left"}))
-//     let eChild3 = my_create("div",undefined,["w3-topbar"]);//
-//     if(stt === "Done"){
-//         eChild3.appendChild(my_create("div",stt + "<span> on "+aoMonth[iFinDate.getMonth()]+"/"+iFinDate.getDate()+"</span>",["w3-show-inline-block","w3-padding"]))
-//     }else if(stt === "DoneLate"){
-//         eChild3.appendChild(my_create("div",stt + "<span> on "+aoMonth[iFinDate.getMonth()]+"/"+iFinDate.getDate()+"</span>",["w3-show-inline-block","w3-padding"]))
-//     }else{
-//         eChild3.appendChild(my_create("div",stt,["w3-button","w3-indigo","w3-shadow"],{},{"onclick":"dsp_user_action_on_item(this)"}))
-//     }
-//     eChild3.appendChild(my_create("div",now_score,["w3-container","w3-show-inline-block"],{"width":"16px"}))
-
-//     // // => some colors for over-due
-//     // if(now_diff_days - total_days < -1){
-//     //     eTop2.classList.add("w3-border-light-green");
-//     // }else if(now_diff_days - total_days < 0){
-//     //     eTop2.classList.add("w3-border-khaki");
-//     // }else{
-//     //     if(! stt.match("Done")) eTop2.classList.add("w3-border-red");
-//     // }
-    
-//     eTop2.appendChild(eTitle);
-//     // eTop2.appendChild(eChild1);
-//     eTop2.appendChild(eChild2);
-//     eTop2.appendChild(eChild3);
-//     return eTop;
-// }
-
-// function calc_score_of_user(listItemRef,personActionRef){
-//     // console.log("dbg:: calc_score_of_user");
-//     let totalScore = 0;
-//     // => working on data
-//     for(let itemRef of listItemRef){
-//         // => working on data
-//         let iSubject = "an item subject";
-//         let iStaDate = new Date(Date.now() - 2*24*3600*1000);
-//         let iEndDate = new Date(Date.now() + 24*3600*1000);
-//         let iFinDate = null;
-//         let stt = "NotYet";//NY, Done
-//         // for some testing contextes
-//         if(itemRef !== undefined){
-//             iSubject = itemRef["item_subject"]; //"an item subject";
-//             iStaDate = new Date(itemRef["item_start"]); //new Date(Date.now() - 2*24*3600*1000);
-//             iEndDate = new Date(itemRef["item_end"]); //new Date(Date.now() + 24*3600*1000);
-//         }
-//         if(personActionRef !== undefined){
-//             for(let chkSubject in personActionRef){
-//                 if(chkSubject.replace(/[\s'"]/g,"") === iSubject.replace(/[\s'"]/g,"")){
-//                     iFinDate = new Date(personActionRef[chkSubject]["fin_date"]);
-//                     // console.log(chkSubject+ " vs "+iSubject, "matched", personActionRef[chkSubject],iFinDate)
-//                 }
-//             }
-//         }
-//         let total_days =Number((iEndDate-iStaDate)/(1000*3600*24)).toFixed(1);
-//         let now_diff_days = Number((Date.now()-iStaDate)/(1000*3600*24)).toFixed(1);
-//         let now_diff_percent = Number(100*(Date.now()-iStaDate)/(iEndDate-iStaDate)).toFixed(1);
-//         let now_score = 0;
-//         if(now_diff_percent <=30){
-//             now_score = 3;
-//         }else if(now_diff_percent <=60){
-//             now_score = 2;
-//         }else if(now_diff_percent <=100){
-//             now_score = 1;
-//         }else if(now_diff_percent > 100){
-//             now_score = -1;
-//         }else{}
-//         if(iFinDate - iStaDate >= 0 && iEndDate - iFinDate >= 0){
-//             stt = "Done";
-//         }else if(iFinDate - iEndDate > 0) {
-//             stt = "DoneLate";
-//         }else{}
-//         if(stt === "Done"){
-//             // get score from the history
-//             now_score = "0";
-//             if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=30){
-//                 now_score = 3;
-//             }else if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=60){
-//                 now_score = 2;
-//             }else if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=100){
-//                 now_score = 1;
-//             }else{}
-//         }else if(stt === "DoneLate"){
-//             now_score = 0.5;
-//         }else{
-//             // stt === NotYet
-//             if(Date.now() - iEndDate <= 0) {
-//                 now_score = 0; //only turn to 0 when calculating the real number
-//             }else{}
-//         }
-//         // => scoring
-//         if(stt === "Done" || now_diff_days - total_days > 0) totalScore += now_score;
-//         // =>
-//     }
-//     return totalScore;
-// }
-
-// function gen_tbl_scoring(listItemRef,personActionRef){
-//     // console.log("dbg:: gen_tbl_scoring");
-//     // => working on generating element
-//     let eTbl = my_create("table",undefined,["w3-table-all","w3-hoverable","w3-small","w3-animate-zoom"],{"width":"100%"});
-//     let eTbd = my_create("tbody");
-//     eTbd.appendChild(my_add_row(["Subject","Status","Last Update On","Start Date","End Date","Finished on","Score"],"th"));
-//     // => working on data
-//     for(let itemRef of listItemRef){
-//         // => working on data
-//         let iSubject = "an item subject";
-//         let iRefLink = "an item subject";
-//         let iStaDate = new Date(Date.now() - 2*24*3600*1000);
-//         let iEndDate = new Date(Date.now() + 24*3600*1000);
-//         let iFinDate = null;
-//         let iFinLastModBy = "-";
-//         let iFinLastModOn = "-";
-//         let stt = "NotYet";//NY, Done
-//         // for some testing contextes
-//         if(itemRef !== undefined){
-//             iSubject = itemRef["item_subject"]; //"an item subject";
-//             iRefLink = itemRef["item_link"]; //"an item subject";
-//             iStaDate = new Date(itemRef["item_start"]); //new Date(Date.now() - 2*24*3600*1000);
-//             iEndDate = new Date(itemRef["item_end"]); //new Date(Date.now() + 24*3600*1000);
-//         }
-//         if(personActionRef !== undefined){
-//             for(let chkSubject in personActionRef){
-//                 if(chkSubject.replace(/[\s'"]/g,"") === iSubject.replace(/[\s'"]/g,"")){
-//                     iFinDate = new Date(personActionRef[chkSubject]["fin_date"]);
-//                     let dateOffset = "";
-//                     if(personActionRef[chkSubject].hasOwnProperty("lastUpdBy")) iFinLastModBy = personActionRef[chkSubject]["lastUpdBy"];
-//                     if(personActionRef[chkSubject].hasOwnProperty("lastUpdOn")) iFinLastModOn = personActionRef[chkSubject]["lastUpdOn"];
-//                     if(personActionRef[chkSubject].hasOwnProperty("timeOffset"))   dateOffset = personActionRef[chkSubject]["timeOffset"];
-//                     // console.log(chkSubject+ " vs "+iSubject, "matched", personActionRef[chkSubject],iFinDate)
-//                 }
-//             }
-//         }
-//         let total_days =Number((iEndDate-iStaDate)/(1000*3600*24)).toFixed(1);
-//         let now_diff_days = Number((Date.now()-iStaDate)/(1000*3600*24)).toFixed(1);
-//         let now_diff_percent = Number(100*(Date.now()-iStaDate)/(iEndDate-iStaDate)).toFixed(1);
-//         let now_score = 0;
-//         if(now_diff_percent <=30){
-//             now_score = 3;
-//         }else if(now_diff_percent <=60){
-//             now_score = 2;
-//         }else if(now_diff_percent <=100){
-//             now_score = 1;
-//         }else if(now_diff_percent > 100){
-//             now_score = -1;
-//         }else{}
-//         if(iFinDate - iStaDate >= 0 && iEndDate - iFinDate >= 0){
-//             stt = "Done";
-//         }else if(iFinDate - iEndDate > 0) {
-//             stt = "DoneLate";
-//         }else{}
-//         if(stt === "Done"){
-//             // get score from the history
-//             now_score = "0";
-//             if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=30){
-//                 now_score = 3;
-//             }else if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=60){
-//                 now_score = 2;
-//             }else if(Number(100*(iFinDate - iStaDate)/(iEndDate - iStaDate)) <=100){
-//                 now_score = 1;
-//             }else{}
-//         }else if(stt === "DoneLate"){
-//             now_score = 0.5;
-//         }else{
-//             // stt === NotYet
-//             if(Date.now() - iEndDate <= 0) {
-//                 now_score = 0; //only turn to 0 when calculating the real number
-//             }else{}
-//         }
-//         // => scoring
-//         if(stt === "Done" || now_diff_days - total_days > 0) theScore.innerText = Number(theScore.innerText)+now_score;
-//         if(stt === "NotYet") theWarn.innerText = Number(theWarn.innerText)+1
-//         // =>
-//         eTbd.appendChild(my_add_row([iSubject,stt,my_datetime_fr_epoch(iFinLastModOn),my_datetime(iStaDate),my_datetime(iEndDate),my_datetime(iFinDate),now_score]));
-//     }
-//     eTbl.appendChild(eTbd); 
-//     return eTbl;
-// }
-
-// function gen_people_accounts(objData,objDataItems){
-//     let eTbl = my_create("table",undefined,["w3-table-all","w3-hoverable","w3-small","w3-animate-zoom"],{"width":"100%"});
-//     let eTbd = my_create("tbody");
-//     eTbd.appendChild(my_add_row(["Account","Name","Section","group","moreInfo","del?","lastModBy","lastModOn","score"],"th"));
-//     for(let tmpE of eTbd.getElementsByTagName("tr")[eTbd.getElementsByTagName("tr").length-1].getElementsByTagName("th")){
-//         tmpE.innerHTML = tmpE.innerHTML+"<i class=\"bi bi-shuffle\"></i>";
-//         tmpE.setAttribute("onclick","sortTblByHeader(this)");
-//     }
-//     // => working on data
-//     for(let email in objData){
-//         let name = objData[email]["person_name"];
-//         let sect = objData[email]["person_section"];
-//         let group = objData[email]["person_group"];
-//         let moreInfo = objData[email]["person_moreInfo"];
-//         let flgDel = "-";if(objData[email].hasOwnProperty("_delete_")) flgDel = objData[email]["_delete_"];
-//         let lastModBy = ""; if(objData[email].hasOwnProperty("_user_")) lastModBy = objData[email]["_user_"];
-//         let lastModOn = objData[email]["_modTime_"];
-//         let score = "-";
-//         if(objDataItems !== undefined){
-//             score = calc_score_of_user(objDataItems,retrieve_user_action(email))
-//         }
-//         eTbd.appendChild(my_add_row([email,name,sect,group,moreInfo,flgDel,lastModBy,my_datetime_fr_epoch(lastModOn),score]));
-//     }
-//     eTbl.appendChild(eTbd); 
-//     //
-//     return eTbl;
-// }
-
-// function dsp_all_items(mode){
-//     // => AJAX to get info
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             remove_effect();
-//             // =>
-//             let objData = [];
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             // 
-//             while(mainSide.childNodes.length > 0) {mainSide.lastChild.remove()}
-//             while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//             hide_left();//if any
-//             // reset warning and scoring
-//             theWarn.innerText = 0;
-//             theScore.innerText = 100;
-//             // sorting by the end date
-//             objData.sort(function(a,b){
-//                 let x = new Date(a["item_end"]);
-//                 let y = new Date(b["item_end"]);
-//                 return y - x;
-//             })
-//             let personActionRef = retrieve_user_action();
-//             for(let tmpO of objData){
-//                 let aE = gen_item_w_person(tmpO,personActionRef,mode);
-//                 if(aE !== null) mainSide.appendChild(aE);
-//             }
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_items.php",true);
-//     xmlhttp.send();
-//     return;
-// }
-
-// function dsp_sum_all_items(type){
-//     if(type === undefined) type = "tables";
-//     if(type !== "tables" && type !== "graphs") type = "tables";
-//     // => AJAX to get info
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             remove_effect();
-//             // =>
-//             let objData = {};
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             // 
-//             // console.log(objData)
-//             while(mainSide.childNodes.length > 0) {mainSide.lastChild.remove()}
-//             // sorting by the end date
-//             objData["data"].sort(function(a,b){
-//                 let x = new Date(a["item_end"]);
-//                 let y = new Date(b["item_end"]);
-//                 return y - x;
-//             })
-//             for(let tmpO of objData["data"]){
-//                 if(type === "tables"){
-//                     let aE = null;
-//                     aE = gen_sum_items_tbl(tmpO,objData["sumSect"],objData["sumGroup"]);
-//                     if(aE !== null) mainSide.appendChild(aE);
-//                 }else if(type === "graphs"){
-//                     // retrieve user info to scope the instant charts (3 charts: 1 for all, 1 for section, 1 for group) displaying
-//                     let xmlhttp = new XMLHttpRequest();
-//                     xmlhttp.onreadystatechange = function(){
-//                         if(this.readyState == 4 && this.status == 200){
-//                             // =>
-//                             let userData = {};
-//                             try {userData = JSON.parse(this.responseText);}
-//                             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//                             //
-//                             if(Object.keys(userData).length > 0) {
-//                                 // =>
-//                                 let aE = null;
-//                                 aE = gen_sum_items_graph(tmpO,objData["sumSect"],objData["sumGroup"],userData);
-//                                 if(aE !== null) mainSide.appendChild(aE);
-//                             }else{}
-//                         }else{}
-//                     }
-//                     xmlhttp.open("GET","retrieve_users.php?q="+thisUser,true);
-//                     xmlhttp.send();
-//                 }else{}
-//             }
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_items_for_graphs.php",true);
-//     xmlhttp.send();
-//     return;
-// }
-
-// function dsp_ny_members_for_item(subject,sectOrGrp,sectOrGrpName){
-//     //
-//     // console.log("dsp_NY: ",subject,sectOrGrp,sectOrGrpName);
-//     // => AJAX to get info
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             remove_effect();
-//             hide_left();
-//             // =>
-//             let objData = {};
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             // 
-//             // console.log(objData)
-//             while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//             let aE = gen_list_NY_members_for_item(objData);
-//             if(aE !== null) leftSide.appendChild(aE);
-//             show_left();
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_NY_members_for_item.php?subject="+encodeURIComponent(subject)+"&type="+sectOrGrp+"&name="+sectOrGrpName,true);
-//     xmlhttp.send();
-//     return;
-// }
-
-// function dsp_tbl_scoring(){
-//         //
-//     // => AJAX to get info
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             remove_effect();
-//             // =>
-//             let objData = [];
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             // 
-//             while(mainSide.childNodes.length > 0) {mainSide.lastChild.remove()}
-//             // reset warning and scoring
-//             theWarn.innerText = 0;
-//             theScore.innerText = 100;
-//             // sorting by the end date
-//             objData.sort(function(a,b){
-//                 let x = new Date(a["item_end"]);
-//                 let y = new Date(b["item_end"]);
-//                 return y - x;
-//             })
-//             let personActionRef = retrieve_user_action();
-//             mainSide.appendChild(gen_tbl_scoring(objData,personActionRef));
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_items.php",true);
-//     xmlhttp.send();
-//     return;
-// }
-
-// function dsp_all_users(){
-//     // => display all users and their scores => AJAX 2 times x number of users => will be a hard work
-//     // => AJAX 1 to get list of items registered
-//     let xmlhttp1 = new XMLHttpRequest();
-//     xmlhttp1.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             remove_effect();
-//             let objDataItems = [];
-//             try {objDataItems = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             dsp_notification("Retrieved list of items: done","Info");
-//             // => create a progress div
-//             let eProgressTop = my_create("i",undefined,["bi","bi-hourglass-split","w3-spin","w3-xxlarge"],{"position":"fixed","top":"5px","left":"5px"},{"id":"my_progress"})
-//             document.getElementsByTagName("body")[0].appendChild(eProgressTop);
-//             // => AJAX 2 to get info of all users
-//             let xmlhttp = new XMLHttpRequest();
-//             xmlhttp.onreadystatechange = function(){
-//                 if(this.readyState == 4 && this.status == 200){
-//                     // =>
-//                     let objDataUsers = {};
-//                     try {objDataUsers = JSON.parse(this.responseText);}
-//                     catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//                     dsp_notification("Retrieved list of users: done","Info");
-//                     // 
-//                     while(mainSide.childNodes.length > 0) {mainSide.lastChild.remove()}
-//                     // gen table of accounts
-//                     mainSide.appendChild(gen_people_accounts(objDataUsers,objDataItems));
-//                     //
-//                     if(document.getElementById("my_progress") !== undefined) document.getElementById("my_progress").remove();
-//                     dsp_notification("Generated table of users and scores.","Info")
-//                 }else{}
-//             }
-//             xmlhttp.open("GET","retrieve_users.php",true);
-//             xmlhttp.send();
-//             dsp_notification("Will take time, please be patient ...", "Warn");
-//         }
-//     }
-//     xmlhttp1.open("GET","retrieve_items.php",true);
-//     xmlhttp1.send();
-//     return;
-// }
-
-// function retrieve_user_action(tgtUser){
-//     //
-//     if(tgtUser === undefined) tgtUser = thisUser;
-//     let objData = {};
-//     // => AJAX to get info => NOT AJAX
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.open("GET","retrieve_user_action.php?q="+tgtUser,false);
-//     // dsp_notification("Retrieving user action: sent.","Info");
-//     xmlhttp.send();
-//     // dsp_notification("Retrieving user action: received.");
-//     try {objData = JSON.parse(xmlhttp.responseText);}
-//     catch(err){ dsp_notification(err,"Error");dsp_notification(xmlhttp.responseText,"Error");return {};}
-//     return objData;
-// }
-
-// // ====================================
-// function setCookie(cname, cvalue, exdays) {
-//     const d = new Date();
-//     d.setTime(d.getTime() + (exdays * 24 * 60 * 60 * 1000));
-//     let expires = "expires="+d.toUTCString();
-//     document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
-// }
-
-// function getCookie(cname) {
-//     let name = cname + "=";
-//     let ca = document.cookie.split(';');
-//     for(let i = 0; i < ca.length; i++) {
-//         let c = ca[i];
-//         while (c.charAt(0) == ' ') {
-//             c = c.substring(1);
-//         }
-//         if (c.indexOf(name) == 0) {
-//             return c.substring(name.length, c.length);
-//         }
-//     }
-//     return "";
-// }
-
-// function init_user(){
-//     let user = getCookie("userEmail");
-//     if (user === "")  user = "Somebody@nowhere.com";
-//     dsp_user_info_from_email(user);
-//     dsp_sum_all_items("graphs");
-//     // dsp_all_items("all");
-// }
-
-// // function checkCookie() {
-// //     let user = getCookie("userEmail");
-// //     if (user != "") {
-// //     } else {
-// //         user = prompt("Hi! Who are you?! :", "");
-// //         if (user != "" && user != null) {
-// //             setCookie("userEmail", user, 1);
-// //         } else {
-// //             user = "Somebody@nowhere.com";
-// //         }
-// //     }
-// //     // update wherever needed
-// //     document.getElementById("userDisplay").innerHTML = user ;
-// // }
-
-// function dsp_user_info_from_email(email){
-//     if(email === undefined) return 0;
-//     if(email === "") return 0;
-    
-//     // AJAX retrieving info from list of registered users
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             // =>
-//             remove_effect();
-//             let objData = {};
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             // 
-//             while(mainSide.childNodes.length > 0) {mainSide.lastChild.remove()}
-//             //
-//             if(Object.keys(objData).length > 0) {
-//                 // update the user info
-//                 // console.log(objData)
-//                 let nameStr = objData[email]["person_name"];
-//                 let title = "User-normal";if(objData[email].hasOwnProperty("person_title")) title = objData[email]["person_title"];
-//                 let section = "Section";if(objData[email].hasOwnProperty("person_section")) section = objData[email]["person_section"];
-//                 let group = "Group";if(objData[email].hasOwnProperty("person_group")) group = objData[email]["person_group"];
-//                 let OTPTicker = getCookie("userEmailOTP");
-//                 let eName = userDisplay.getElementsByTagName("span")[0];
-//                 let eEmail = userDisplay.getElementsByTagName("span")[1];
-//                 let eTitle = userDisplay.getElementsByTagName("span")[2];
-//                 let eShield = userDisplay.getElementsByTagName("i")[0];
-//                 let eSectGrp = userDisplay.getElementsByTagName("span")[3];
-//                 // =>
-//                 let fname = nameStr.split(/\s+/)[nameStr.split(/\s+/).length-1];
-//                 let lname = nameStr.split(/\s+/)[0];
-//                 // console.log("fname="+fname,"lname="+lname)
-//                 let dspName =  "";
-//                 if( lname !== undefined) dspName += lname;
-//                 if( fname !== undefined && fname !== lname) dspName += " " + fname;
-//                 // =>
-//                 eName.innerText = dspName;
-//                 eEmail.innerText = email;
-//                 eTitle.innerText = title;
-//                 if(title !== "Admin" && title !== "Moderator"){
-//                     for(let tmpE of myMenu2.getElementsByTagName("div")){
-//                         if(String(tmpE.getAttribute("onclick")).search(/dsp_add_item/)>-1) tmpE.style.display = "none";
-//                         if(String(tmpE.getAttribute("onclick")).search(/dsp_all_users/)>-1) tmpE.style.display = "none";
-//                     }
-//                 }
-//                 eSectGrp.innerText = section + "/" + group;
-//                 if(OTPTicker === "OK"){
-//                     if(eShield.classList.contains("my-login-tick-ng")){
-//                         eShield.classList.remove("my-login-tick-ng");
-//                         eShield.classList.remove("bi-shield-x");
-//                         eShield.classList.add("my-login-tick-ok");
-//                         eShield.classList.add("bi-shield-check");
-//                     }
-//                 }else{
-//                     if(eShield.classList.contains("my-login-tick-ok")){
-//                         eShield.classList.remove("my-login-tick-ok");
-//                         eShield.classList.remove("bi-shield-check");
-//                         eShield.classList.add("my-login-tick-ng");
-//                         eShield.classList.add("bi-shield-x");
-//                     }
-//                 }
-//                 thisUser = email;
-//                 // =>
-//                 dsp_all_items("all");
-//             }else{
-//                 // new account?!
-//                 dsp_notification("New/Deleted account, please register first.")
-//             }
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_users.php?q="+email,true);
-//     xmlhttp.send();
-//     return;
-//     //
-// }
-
-// function update_user_info_in_adding_form(email,tgtForm){
-//     if(tgtForm === undefined) tgtForm = gen_add_person_form();
-//     if(email === undefined) email = thisUser;
-//     // => change the way buttons' looks
-//     let btnImport = null;
-//     let btnDelete = null;
-//     let btnRecover = null;
-//     for(let tmpBtn of tgtForm.getElementsByTagName("div")){
-//         if(!tmpBtn.classList.contains("w3-button")) continue;
-//         tmpBtn.style.display = "none";
-//         if(tmpBtn.getAttribute("onclick").match("import_user_info")){
-//             btnImport = tmpBtn;
-//         }else if(tmpBtn.getAttribute("onclick").match("delete_user_info")){
-//             btnDelete = tmpBtn;
-//         }else if(tmpBtn.getAttribute("onclick").match("recover_user_info")){
-//             btnRecover = tmpBtn;
-//         }else{}
-//     }
-//     // =>
-//     if(email.search(/\S+@\S+\.com/)) return 0;
-//     // AJAX getting info of the user
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             // =>
-//             remove_effect();
-//             let objData = {};
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             //
-//             if(Object.keys(objData).length > 0) {
-//                 // console.log(objData)
-//                 for(let eInp of tgtForm.getElementsByTagName("input")){
-//                     for(let keyw in objData[email]){
-//                         if(objData[email][keyw] === undefined) continue;
-//                         if(eInp.name === keyw) eInp.value = objData[email][keyw];
-//                     }
-//                 }
-//                 if(objData[email].hasOwnProperty("_delete_") && objData[email]["_delete_"]){
-//                     dsp_notification("Account deleted, recover?!")
-//                     btnRecover.style.display = "";
-//                 }else{
-//                     btnImport.style.display = ""; btnImport.innerText = "Modify";
-//                     if(email !== thisUser) btnDelete.style.display = "";
-//                 }
-//             }else{
-//                 // new account?!
-//                 dsp_notification("User "+email+" not found, create new?!")
-//                 // => update tgtForm the buttons
-//                 btnImport.style.display = "";
-//                 btnImport.innerText = "New";
-//             }
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_users.php?q="+email,true);
-//     xmlhttp.send();
-//     return 1;
-// }
-
-// function update_item_info_in_adding_form(subject,tgtForm){
-//     if(tgtForm === undefined) return 0;
-//     if(subject === undefined) return 0;
-//     if(subject === "") return 0;
-//     // AJAX getting info of the user
-//     let xmlhttp = new XMLHttpRequest();
-//     xmlhttp.onreadystatechange = function(){
-//         if(this.readyState == 4 && this.status == 200){
-//             // =>
-//             remove_effect();
-//             let objData = [];
-//             try {objData = JSON.parse(this.responseText);}
-//             catch(err){ dsp_notification(err,"Error");dsp_notification(this.responseText,"Error");return;}
-//             //
-//             // console.log(objData);
-//             if(objData.length > 0) {
-//                 for(let eInp of tgtForm.getElementsByTagName("input")){
-//                     for(let keyw in objData[objData.length-1]){
-//                         if(objData[objData.length-1][keyw] === undefined) continue;
-//                         if(eInp.name === keyw) eInp.value = objData[objData.length-1][keyw];
-//                     }
-//                 }
-//                 for(let eInp of tgtForm.getElementsByTagName("textarea")){
-//                     for(let keyw in objData[objData.length-1]){
-//                         if(objData[objData.length-1][keyw] === undefined) continue;
-//                         if(eInp.name === keyw) eInp.value = objData[objData.length-1][keyw];
-//                     }
-//                 }
-//             }else{
-//                 // new account?!
-//                 dsp_notification("item not found, make new.")
-//             }
-//         }else{}
-//     }
-//     xmlhttp.open("GET","retrieve_items.php?q="+encodeURIComponent(subject),true);
-//     xmlhttp.send();
-//     return 1;
-// }
-
-// function check_email_input(field){
-//     if(field.value === undefined) return 0;
-//     if(field.value === ""){
-//         for(let tmpE of field.parentNode.getElementsByTagName("div")){
-//             if(tmpE.classList.contains("w3-button")){
-//                 if(!tmpE.classList.contains("w3-opacity")) tmpE.classList.add("w3-opacity")
-//             }
-//         }
-//         return 0;
-//     }else{}
-//     if(! field.value.match(/.*@.*\.com/)) return 0;
-//     for(let tmpE of field.parentNode.getElementsByTagName("div")){
-//         if(tmpE.classList.contains("w3-button")){
-//             if(tmpE.classList.contains("w3-opacity")) tmpE.classList.remove("w3-opacity");
-//         }
-//     }
-//     return 1;
-//     // console.log("got email: ", field.value)
-// }
-
-// function check_OTP_input(field){
-//     if(field.value === undefined) return 0;
-//     let flgChkEmail = 0;
-//     for(let tmpE of field.parentNode.getElementsByTagName("input")){
-//         if(tmpE.name === "login_email"){
-//             flgChkEmail = check_email_input(tmpE);
-//         }
-//     }
-//     if(flgChkEmail === 0) return 0;
-//     if(field.value === ""){
-//         for(let tmpE of field.parentNode.getElementsByTagName("div")){
-//             if(tmpE.classList.contains("w3-button")){
-//                 tmpE.innerText = "getOTP";
-//             }
-//         }
-//         return 0;
-//     }else{
-//         for(let tmpE of field.parentNode.getElementsByTagName("div")){
-//             if(tmpE.classList.contains("w3-button")){
-//                 tmpE.innerText = "Login";
-//             }
-//         }
-//         return 1;
-//     }
-//     // console.log("got OTP: ",field.value)
-//     return 1;
-// }
-
-// function remove_effect(){
-//     if(document.getElementById("effectDsp") !== null) document.getElementById("effectDsp").remove();
-// }
-// function clear_all(){
-//     // => duel with leftSide
-//     while(leftSide.childNodes.length > 0) {leftSide.lastChild.remove()}
-//     hide_left();
-//     // => remove child elements in mainSide
-//     let max = mainSide.childNodes.length;
-//     for(let i=max-1;i>=0;i--){
-//         setTimeout(function(){
-//             let leftP =  Math.random()*100;
-//             let topP =  Math.random()*100;
-//             mainSide.childNodes[i].style.position = "absolute";
-//             mainSide.childNodes[i].style.left = leftP + "%";
-//             mainSide.childNodes[i].style.top = topP + "%";
-//             mainSide.childNodes[i].style.animationName = "my-left-out";
-//             // mainSide.childNodes[i].style.animationName = "my-notifying";
-//             mainSide.childNodes[i].style.animationDuration = "1s";
-//             setTimeout(function(){
-//                 mainSide.childNodes[i].remove();
-//             },1000);
-//         },200*(max-i))
-//     }
-//     // while(mainSide.childNodes.length > 0) {mainSide.lastChild.remove()}
-//     // => make effect (snow flake)
-//     if(document.getElementById("effectDsp") === null){
-//         // => generate a snow flake?!
-//         let snowDivTop = document.createElement("div");
-//         snowDivTop.setAttribute("id","effectDsp");
-//         // let snowDiv = document.createElement("div");
-//         // snowDivTop.appendChild(snowDiv);
-//         // snowDiv.classList.add("snowflake");
-//         let snow_density = 300;
-//         // =>//spawn the css for snow flakes, 200 means density of flakes
-//         spawnSnowCSS(snow_density);
-//         // =>//spawn the snow flake div.
-//         snow_density -= 1;
-//         for (let x = 0; x < snow_density; x++) {
-//             let board = document.createElement('div');
-//             board.className = "snowflake";
-//             snowDivTop.appendChild(board);
-//         }
-//         document.getElementsByTagName("body")[0].insertBefore(snowDivTop,document.getElementsByTagName("body")[0].childNodes[0]);
-//     }
-// }
 
 function sortTblByHeader(thTgt){
     let trHead = thTgt.parentNode.getElementsByTagName("th");
@@ -2702,6 +1145,16 @@ function sortTblByHeader(thTgt){
             }
         }
     }
+}
+
+///////
+function is_Renesas_email(inS){
+    if(inS === undefined) return false;
+    if(inS === null) return false;
+    if(inS === "") return false;
+    if(inS.search(/^\w+\.\w+\.\w+@renesas.com$/) > -1) return true;
+    dsp_notification("Not a Renesas email.","Error");
+    return false;
 }
 
 

@@ -2,11 +2,11 @@
 
 class User_by_file
 {
-    private $tgtd = "../../data/login";
+    private $tgtd = "../../data/by_files/login";
     private $global_setting_file = "global_setting_users.json";
     private $suffix = "_login.json";
     
-    public $role = "Guess";//Guess, Admin, User, SuperUser
+    public $role = "GuessX";//Guess, Admin, User, SuperUser
     public $login_email = "";
     public $satus = "Unknown";//NotRegYet|Already|Removed|Unknown
 
@@ -22,20 +22,20 @@ class User_by_file
         return $_SESSION["login_email"];
     }
    
-    static function chk_login_json_data(){
-        $tgtd = "../../data/login";
-        $tgtf = "$tgtd/login.json";
-        if(!is_dir($tgtd)){
-            if(! mkdir($tgtd)) return 101; # "msg" => "Failed: cannot create dir holding data.";
-        }
-        if(!file_exists($tgtf)){
-            if(file_put_contents($tgtf,"",LOCK_EX) === false) return 102; #"msg" => "Failed: cannot create simple login json data.";
-        }else{
-            if(is_writeable($tgtf)) return 1; # array("code"=>1,"msg" => "OK: login.json writable.");
-            if(is_readable($tgtf))  return 2; #array("code"=>2,"msg" => "OK: login.json readable.");
-            return 103; #array("code" => 103,  "msg" => "Failed: login json not writable, not readble.");
-        }
-    }
+    // static function chk_login_json_data(){
+    //     $tgtd = "../../data/login";
+    //     $tgtf = "$tgtd/login.json";
+    //     if(!is_dir($tgtd)){
+    //         if(! mkdir($tgtd)) return 101; # "msg" => "Failed: cannot create dir holding data.";
+    //     }
+    //     if(!file_exists($tgtf)){
+    //         if(file_put_contents($tgtf,"",LOCK_EX) === false) return 102; #"msg" => "Failed: cannot create simple login json data.";
+    //     }else{
+    //         if(is_writeable($tgtf)) return 1; # array("code"=>1,"msg" => "OK: login.json writable.");
+    //         if(is_readable($tgtf))  return 2; #array("code"=>2,"msg" => "OK: login.json readable.");
+    //         return 103; #array("code" => 103,  "msg" => "Failed: login json not writable, not readble.");
+    //     }
+    // }
 
     function get_all_user_emails(){
         if($this->role !== "Admin"
@@ -63,7 +63,7 @@ class User_by_file
         if($this->login_email !== $email
         && ($this->role !== "Admin"
          && $this->role !== "SuperUser")
-        ) return 102;//NG: cannot register the user info when: (1) diff account, and (2) not a Admin or SuperUser
+        ) return "102";//NG: cannot register the user info when: (1) diff account, and (2) not a Admin or SuperUser
 
         $mode = "modify";
         $info[$mode . "_on"] = time();
@@ -76,7 +76,13 @@ class User_by_file
             $info[$mode . "_on"] = time();
             $info[$mode . "_by"] = $this->login_email;
             if(!isset($info["login_email"])) $info["login_email"] = $email;
-            if(!isset($info["user_name"])) $info["user_name"] = "IamMe";
+            // if(!isset($info["user_name"])) $info["user_name"] = "IamMe";//
+            if(!isset($info["user_name"]) || $info["user_name"] === ""){
+                $tmpv = explode(".",$email);
+                $fN = ucfirst($tmpv[0]);
+                $lN = ucfirst($tmpv[1]);
+                $info["user_name"] = "$fN $lN";
+            }
             if(!isset($info["role"])) $info["role"] = "Guess";
             if($email === $this->login_email) $info["role"] = $this->role;
             if(!file_put_contents($tgtf,json_encode($info),LOCK_EX)){
@@ -110,16 +116,38 @@ class User_by_file
         return $this->reg_user($email,array("removed" => "yes"));
     }
 
+    function remove_user_complete($email="",$info=array()){
+        // newly register or modify a user for his/her email
+        if($email === "") $email = $this->login_email;
+        if($email === "") return 101;//no email to reg
+
+        if($this->login_email !== $email
+        && ($this->role !== "Admin"
+         && $this->role !== "SuperUser")
+        ) return "102";//NG: cannot register the user info when: (1) diff account, and (2) not a Admin or SuperUser
+
+        $tgtf = $this->tgtd . "/" . $email . $this->suffix;
+        return unlink($tgtf);
+
+    }
+
     function get_user_info($email=""){
+        $oD = array();
+        $oD["reqested_email"] = $email;
         if($email === "") $email = $this->login_email;
         if($email === "") return array();
+    
+        $tgtf = $this->tgtd . "/" . $email . $this->suffix;
+        if(file_exists($tgtf)) $oD = json_decode(file_get_contents($tgtf),true);
+        $oD["shielded"] = "yes";
+        if(!file_exists($tgtf)) $oD["shielded"] = "no";
+        
+        // overwrite some info
+        if($email === $this->login_email) $oD["role"] = $this->role;
+        $oD["reqesting_email"] = $this->login_email;
+        $oD["login_email"] = $email;
 
-        $tgtf = $this->tgtd . "/" . $this->login_email . $this->suffix;
-        if(file_exists($tgtf)){
-            return json_decode(file_get_contents($tgtf),true);
-        }
-
-        return array();
+        return $oD;
     }
 
     function get_status($email=""){
@@ -141,7 +169,7 @@ class User_by_file
 
     function get_role($email=""){
         if($email === "") $email = $this->login_email;
-        if($email === "") return "Guess";
+        if($email === "") return "Empty";
 
         $tgtf = $this->tgtd . "/" . $this->global_setting_file;
         if(file_exists($tgtf)){
@@ -171,8 +199,28 @@ class User_by_file
                 array_push($regInfo, "mand: removing file: " . $file);
                 unlink($file);
             }
+
+        }elseif($cmd === "removeUserGlobal"){
+            $tgtf = $this->tgtd . "/" . $this->global_setting_file;
+            return unlink($tgtf);
+            
+        }elseif($cmd === "init_user_global_setting"){
+            $initUsernRole = array();
+            $initUsernRole["man.duong.ym@renesas.com"] = array("role" => "Admin");
+
+            $tgtf = $this->tgtd . "/" . $this->global_setting_file;
+            if(!file_exists($this->tgtd)) mkdir($this->tgtd,0755,true) ;
+            if(!file_exists($tgtf)) {
+                if(file_put_contents($tgtf,json_encode($initUsernRole),LOCK_EX) === false) return 102;
+                return 1;//ok, successfully written
+            }
+            return 2;//ok, no writing
+
+        }elseif($cmd === "listUsers"){
+            $regInfo = $this->get_all_user_emails();
+
         }else{
-            $regInfo["error"] = "Command not found: $cmd";
+            $regInfo["error"] = "Command not found: '$cmd'";
         }
         return $regInfo;
     }

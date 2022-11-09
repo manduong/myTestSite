@@ -20,6 +20,7 @@
         array_push($oO["cntData"],array("label" => "Email", "type" => "email", "name" => "login_email","onkeyup"=>"act_on_change_email_input(this)"));
         // array_push($oO["cntData"],array("label" => "Called Name", "type" => "text", "name" => "login_name",));
         array_push($oO["cntData"],array("label" => "Password", "type" => "password", "name" => "login_password","onkeyup"=>"act_on_change_password_input(this)"));
+        array_push($oO["cntData"],array("label" => "Password Again", "type" => "password", "name" => "login_password_repeated","onkeyup"=>"act_on_change_password_repeated_input(this)","disabled" => true,"display" => "none"));
         array_push($oO["cntData"],array("label" => "Login", "type" => "submit", "disabled" => true));
         array_push($oO["cntData"],array("label" => "Remember me", "type" => "checkbox", "name" => "login_rememberme", "checked" => "checked",));
     }
