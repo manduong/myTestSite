@@ -5,7 +5,7 @@
     register_shutdown_function("my_handler_fatal",array());
     require_once("users_sqlite3.class.php");
     $user = new User_by_sqlite3;
-    
+
     $oO = array();
     $oO["REQUEST"] = $_REQUEST;
 

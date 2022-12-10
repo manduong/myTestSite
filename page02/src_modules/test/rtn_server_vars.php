@@ -8,6 +8,7 @@
     // $oO["POST"] = $_POST; 
     // $oO["COOKIES"] = $_COOKIE;
     $oO["SESSION"] = $_SESSION;
+    $oO["test"] = 2;
     // $oO["SERVER"] = $_SERVER;
     // $oO["GLOBALS"] = $GLOBALS;
     // $oO["REQUEST"] = $_REQUEST;

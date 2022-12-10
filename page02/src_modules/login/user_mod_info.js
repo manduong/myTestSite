@@ -1,7 +1,5 @@
 function dsp_mod_user_info(){
-    // let sf = "src_modules/login/rtn_data_mod_user_info_form.php";
-    // let sf2 = "src_modules/login/chk_and_rtn_login_user_info.php";
-    let sf = "src_modules/login/rtn_data_mod_user_info_form_sqlite.php";
+    let sf = "src_modules/login/rtn_data_mod_user_info_form.php";
     let sf2 = "src_modules/login/chk_and_rtn_login_user_info_sqlite.php";
     my_ajax_get(sf,[{}],function(rtnO){
         let tgtForm  = my_gen_form(rtnO,act_after_mod_user_submission);
@@ -58,7 +56,7 @@ function act_after_mod_user_submission(tgtE,rtnO){
         tgtE.getElementsByClassName("form_return_info")[0].innerText = rtnO["reg_user_status"];
     }else{
         upd_user_info();//update the 
-        dsp_notification("User info updated.","Info");
+        dsp_notification("User info updated: rtnCode='"+rtnO["reg_user_status"]["info"]["exec_msg"]+"'","Info");
         tgtE.remove();//close the form
     }
     return 1;

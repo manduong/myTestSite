@@ -11,6 +11,7 @@
     require_once 'otp.class.php';
     require_once 'mail_function.php';
 
+    $defOTPf = "../../data_manual/list_user_w_def_OTP.txt";#file holding default OTP incase there is problem with OTP sending email, this is very dangerous
 
     if(array_count_values($_POST) === 0) {echo "{}";return 0; }
     if(!isset($_POST["login_email"])) {echo "{}";return 0;}
@@ -37,54 +38,62 @@
         $_SESSION['email'] = $email;
         $_SESSION['hash'] = $hash;
         # => sending email
-        sendOTP($email,$code);//send the code via email
+        $oObj["mailStt"] = sendOTP($email,$code);//send the code via email
         $oObj["OTP"] = "Sent";//OTP sent
-        # => testing
-        // $oObj['hash'] = $hash;
-        // $oObj['code'] = $code;
     }else{
         // register the email and the received OTP (or so it is)
-        $oObj["OTP"] = "NG";
-        if(!isset($_SESSION)) session_start();
-        if(!isset($_SESSION['hash'])){
-            $oObj["OTP"] = "NG:already-finished-OTP-missing-hash";
-        }else if(!isset($_SESSION['email'])){
-            $oObj["OTP"] = "NG:already-finished-OTP-missing-email";
+        $oObj["OTP"] = "";
+        $flgInit = false;
+        if(isset($_SESSION)){
+            if(isset($_SESSION["hash"]) && isset($_SESSION["email"])) $flgInit = true;
+            if(!isset($_SESSION["hash"])) $oObj["OTP"] .= "NG:missing-hash ";
+            if(!isset($_SESSION["email"])) $oObj["OTP"] .= "NG:missing-email ";
+            $oObj["SESSION"] = $_SESSION;
         }else{
+            $oObj["OTP"] = "NG: missing SESSION.";
+        }
+        // => try to check and overwrite behavior if there is manual def OTP
+        $defCode = "";
+        if(file_exists($defOTPf) && isset($_SESSION["email"])){
+            $FH = fopen($defOTPf,"r");
+            if($FH){
+                while(!feof($FH)){
+                    $tmpa = explode(",",fgets($FH));
+                    if($tmpa[0] === $_SESSION["email"]){
+                        $defCode = preg_replace('/[\n\r]/','',$tmpa[1]);
+                        $flgInit = true;
+                    }
+                }
+                fclose($FH);
+            }
+        }else{}
+        $oObj["flgInit"] = $flgInit;
+        $oObj["defCode"] = $defCode;
+
+        if($flgInit === true){
             $email = $_SESSION['email'];
-            $hash = $_SESSION['hash'];
+            $hash = "n/a";if(isset($_SESSION['hash'])) $hash = $_SESSION['hash'];
             $code = $_POST['login_OTP'];
             
             $hash = $otp->VerifyOTP($email,$code,$hash);
             
-            if($hash === "MATCHED")
-            {
+            if($hash === "MATCHED" || ($defCode !== "" && $code === $defCode)){
                 $oObj["OTP"] = "OK";
                 session_destroy();// comment out to keep the info in SESSION
-                
-                // start a new session entry and reg the info
-                session_start();
+                session_start();// start a new session entry and reg the info
                 $_SESSION["login_email"] = $email;
                 $_SESSION["logStatus"] = "OK";
                 $_SESSION["logMethod"] = "OTP";
                 $_SESSION["logStart"] = time();
 
                 // => register to system
-                require_once "../../src_modules/login/users_file.class.php";
-                $user = new User_by_file;
-                $oObj["status_1"] = $user->status;
-                $user->reg_user();
-                $oObj["status_2"] = $user->status;
+                require_once "../../src_modules/login/users_sqlite3_OTP.class.php";
+                $user = new User_by_sqlite3;
+                if($user->status !== "Already") $user->reg_user();
                 $oObj["user_info"] = $user->get_user_info();
-            }
-            else
-            {
+            }else{
                 $oObj["OTP"] = "NG:mismatch";
-                $error = true;
             }
-            # => testing
-            // $oObj['hash'] = $hash;
-            // $oObj['code'] = $code;
         }
     }
 

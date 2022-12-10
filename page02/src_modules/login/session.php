@@ -13,11 +13,12 @@
         if(!isset($_SESSION)) session_start();
         if(isset($_SESSION["MD_started"])) {
             // this maybe a form action
-            return;
+            return 2;
         }else{}
 
         $_SESSION["MD_started"] = 1;
         define("MD_init",1);
+        return 1;
     }
 
 ?>

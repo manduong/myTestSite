@@ -1,0 +1,4 @@
+#account,defOTP
+hac.nguyen.xf@renesas.com,ULs9m4QK
+man.duong.ym@renesas.com,JHu1f3Cv
+thien.nguyen.te@renesas.com,PDs3e1iL

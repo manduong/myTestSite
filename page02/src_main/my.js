@@ -78,10 +78,11 @@ function show_left(){
 function hide_left(){
     leftSide.classList.remove("w3-show");
     mainSide.classList.add("my-show-right-slowly")
-    setTimeout(function(){
-        mainSide.style.marginLeft = "0";
-        mainSide.classList.remove("my-show-right-slowly")
-    },1800)
+    mainSide.style.marginLeft = "0";
+    // setTimeout(function(){
+    //     mainSide.style.marginLeft = "0";
+    //     mainSide.classList.remove("my-show-right-slowly")
+    // },1800)
 }
 function toggle_left(){
     if(leftSide.classList.contains("w3-show")){
@@ -180,7 +181,8 @@ function dsp_notification(msg,type){
         bgcolor = "palegreen";
     }else{}
     let eTop = my_create("div",msg,["my-notification"],{"backgroundColor":bgcolor},{})
-    document.getElementsByTagName("body")[0].appendChild(eTop);
+    // document.getElementsByTagName("body")[0].appendChild(eTop);
+    document.getElementById("notificationHolder").appendChild(eTop);
     setTimeout(function(){eTop.remove()},2200);
     my_create_running_line();//a little animation
 }
@@ -225,12 +227,12 @@ function my_return_date(diffDays){
 function my_create_running_line(){
     // create a wrapper of the line
     let eTop = my_create("div",undefined,["w3-container"]);
-    let eLine = my_create("div",undefined,["line"]);
-    let eDot1 = my_create("div",undefined,["dot","dot1"]);
-    let eDot2 = my_create("div",undefined,["dot","dot2"]);
-    let eDot3 = my_create("div",undefined,["dot","dot3"]);
-    let eDot4 = my_create("div",undefined,["dot","dot4"]);
-    let eDot5 = my_create("div",undefined,["dot","dot5"]);
+    let eLine = my_create("div",undefined,["running_line"]);
+    let eDot1 = my_create("div",undefined,["running_dot","running_dot1"]);
+    let eDot2 = my_create("div",undefined,["running_dot","running_dot2"]);
+    let eDot3 = my_create("div",undefined,["running_dot","running_dot3"]);
+    let eDot4 = my_create("div",undefined,["running_dot","running_dot4"]);
+    let eDot5 = my_create("div",undefined,["running_dot","running_dot5"]);
 
     eLine.appendChild(eDot1);
     eLine.appendChild(eDot2);
@@ -260,27 +262,33 @@ function my_ajax_get(svrSrc,hoVar,fnc){
                 catch(err){ 
                     console.log(err)
                     console.log(this.responseText);
-                    dsp_notification(err,"Error");
+                    // dsp_notification(err,"Error");
                     // dsp_notification(this.responseText,"Error");
-                    return;
+                    // return;
+                    objData = this.responseText;
                 }
                 if(fnc === undefined) return;
-                fnc(objData);return;
+                try {fnc(objData)}
+                catch(err){
+                    dsp_notification("Err:"+fnc+":"+err,"Error");
+                    console.log("ERROR when executing fnc: error=", err)
+                }
+                return;
 
             }else if(this.status === 500){
                 console.log("dbg:: caught the state=" + this.readyState + " status="+this.status)
-                let objData = {};
-                try {objData = JSON.parse(this.responseText);}
-                catch(err){
-                    console.log(err);
-                    console.log(this.responseText);
-                    dsp_notification(err,"Error");
-                    dsp_notification(this.responseText,"Error");
-                    return;
-                }
-                // console.log("dbg:",objData)
-                if(fnc === undefined) return;
-                fnc(objData);return;
+                // let objData = {};
+                // try {objData = JSON.parse(this.responseText);}
+                // catch(err){
+                //     console.log(err);
+                //     console.log(this.responseText);
+                //     dsp_notification(err,"Error");
+                //     dsp_notification(this.responseText,"Error");
+                //     return;
+                // }
+                // // console.log("dbg:",objData)
+                // if(fnc === undefined) return;
+                // fnc(objData);return;
             }
         }
     }
@@ -333,7 +341,18 @@ function my_ajax_post_form(svrSrc,form,fnc){
     xmlhttp.send(urlEncodedData);
 }
 
+function executeFunctionByName(functionName, context /*, args */) {
+    var args = Array.prototype.slice.call(arguments, 2);
+    var namespaces = functionName.split(".");
+    var func = namespaces.pop();
+    for(var i = 0; i < namespaces.length; i++) {
+      context = context[namespaces[i]];
+    }
+    return context[func].apply(context, args);
+}
+
 function my_gen_form(cntData,func_act_after_submit){
+    // console.log(cntData)
     if(!cntData.hasOwnProperty("cntData")) return; //
     if(!cntData.hasOwnProperty("formAction")) cntData["formAction"] = ""; //
     // console.log(cntData)
@@ -379,7 +398,11 @@ function my_gen_form(cntData,func_act_after_submit){
             if(tmpv === "label") continue;//for common element, label is a seperated ele
             if(tmpv === "options") continue;//for select, ignore
             if(tmpv === "display") continue;//for select, ignore
-            mainItem.setAttribute(tmpv,formItem[tmpv]);
+            if(tmpv === "value"){
+                mainItem[tmpv] = formItem[tmpv];
+            }else{
+                mainItem.setAttribute(tmpv,formItem[tmpv]);
+            }
         }
         if(formItem.hasOwnProperty("display") && formItem["display"] === "none"){
             if(lblItem !== null) lblItem.style.display = "none";
@@ -403,54 +426,7 @@ function my_gen_form(cntData,func_act_after_submit){
 
     eTop.appendChild(eBtnClose)
     eTop.appendChild(eForm);
-    return my_create("div",my_create("div",eTop,["w3-modal-content"]),["w3-modal"],{},{id:"id_login_form"});
-}
-
-////////////////////////////
-function gen_menu_item(cntI){
-    let eTop = my_create("div",undefined,["w3-bar-item", "w3-mobile","w3-round","w3-button","my-tooltip"]);
-    if(cntI.hasOwnProperty("position")){
-        if(cntI["position"].search("right") > -1) eTop.classList.add("w3-right");
-    }
-    if(cntI.hasOwnProperty("text")){
-        if(cntI["text"] !== ""){
-            eTop.classList.add("w3-padding-16");
-            eTop.innerText = cntI["text"];
-        }
-    }
-    if(cntI.hasOwnProperty("icon")){
-        if(cntI["icon"] !== "") eTop.appendChild(my_create("i",undefined,[cntI["icon"],"w3-text-indigo","w3-xlarge"]));
-    }
-    if(cntI.hasOwnProperty("tooltip")){
-        if(cntI["tooltip"] !== "") eTop.appendChild(my_create("span",cntI["tooltip"],["my-tooltip-content"]));
-    }
-
-    // anything else is attribute
-    for(let tmpv in cntI){
-        if(tmpv === "position") continue;
-        if(tmpv === "text") continue;
-        if(tmpv === "icon") continue;
-        if(tmpv === "tooltip") continue;
-        eTop.setAttribute(tmpv,cntI[tmpv]);
-    }
-    return eTop;
-}
-function dsp_menu(){
-    my_ajax_get("./src_modules/menu/menu.php",[{}],function(rtnO){
-        if(!rtnO.hasOwnProperty("cntData")) return;
-        for(let tmpv of rtnO["cntData"]){
-            if(tmpv.hasOwnProperty("position") && tmpv["position"] === "rightright"){
-                document.getElementById("myMenu2").insertBefore(gen_menu_item(tmpv),document.getElementById("myMenu2").childNodes[0]);
-            }else{
-                document.getElementById("myMenu2").appendChild(gen_menu_item(tmpv));
-            }
-        }
-        if(rtnO.hasOwnProperty("testMenu")){
-            dsp_test_menu(rtnO["testMenu"]);
-        }
-        // => 
-        upd_user_info();
-    });
+    return my_create("div",my_create("div",eTop,["w3-modal-content"]),["w3-modal"],{},{});
 }
 
 ///////////////////////////////
@@ -476,7 +452,6 @@ function upUserDisplay(oData){
 }
 
 function upd_user_info(){
-    // let sf = "src_modules/login/chk_and_rtn_login_user_info.php";
     let sf = "src_modules/login/chk_and_rtn_login_user_info_sqlite.php";
     my_ajax_get(sf,[{}],function(rtnO){
         upUserDisplay(rtnO["user_info"]);
@@ -488,12 +463,12 @@ function upd_user_info(){
 function upd_login_logout_buttons(){
     if(userDisplay.getElementsByTagName("span")[1].innerText === "Somebody@nowhere.com"){
         btn_logout.style.display = 'none';
-        btn_login_otp.style.display = 'block';
-        btn_login.style.display = 'block';
+        if(document.getElementById("btn_login_otp") !== null) btn_login_otp.style.display = 'block';
+        if(document.getElementById("btn_login") !== null) btn_login.style.display = 'block';
     }else{
         btn_logout.style.display = 'block';
-        btn_login_otp.style.display = 'none';
-        btn_login.style.display = 'none';
+        if(document.getElementById("btn_login_otp") !== null) btn_login_otp.style.display = 'none';
+        if(document.getElementById("btn_login") !== null) btn_login.style.display = 'none';
     }
 }
 

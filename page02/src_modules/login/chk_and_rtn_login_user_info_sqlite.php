@@ -1,5 +1,7 @@
 <?php
-    require_once("../../src_modules/login/users_sqlite3.class.php");
+    require_once '../../src_main/my.php';
+    require_once("../../src_modules/login/users_sqlite3_OTP.class.php");
+    register_shutdown_function("my_handler_fatal");
     $oO = array();
     $user = new User_by_sqlite3;
 

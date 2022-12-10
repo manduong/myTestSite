@@ -4,8 +4,10 @@
     // ini_set('html_errors',1);
     // error_reporting(E_ALL);
 
-    require_once("../../src_modules/login/users_file.class.php");
-    $user = new User_by_file;
+    require_once '../../src_main/my.php';
+    require_once("../../src_modules/login/users_sqlite3_OTP.class.php");
+    register_shutdown_function("my_handler_fatal");
+    $user = new User_by_sqlite3;
 
     // return control data for generation of login form
     $oO = array();
